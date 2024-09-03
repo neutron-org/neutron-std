@@ -30,7 +30,3 @@ pub fn try_create_denom(env: Env, subdenom: String) -> Result<Response, Contract
 }
 
 ```
-
-## Querying Neutron modules
-
-Stargate queries are currently disabled on Neutron, but will be enabled in the future. For now, you can use the [bindings](https://github.com/neutron-org/neutron-sdk/blob/main/packages/neutron-sdk/src/bindings/query.rs) in `neutron-sdk` crate to query Neutron modules.
