@@ -1,9 +1,9 @@
 [package]
 name = "neutron-std"
-description = "Standard library for Neutron with CosmWasm support included"
+description = "Standard library for Neutron with CosmWasm support included. This package is a modified copy of the osmosis package - https://github.com/osmosis-labs/osmosis-rust/tree/main/packages/osmosis-std"
 version = "4.2.2-rc"
 edition = "2021"
-license = "Apache-2.0"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/neutron-org/neutron-std"
 homepage = "https://neutron.org"
 readme = "README.md"
