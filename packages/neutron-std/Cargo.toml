@@ -1,7 +1,7 @@
 [package]
 name = "neutron-std"
 description = "Standard library for Neutron with CosmWasm support included"
-version = "4.2.2"
+version = "4.2.2-rc"
 edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/neutron-org/neutron-std"
