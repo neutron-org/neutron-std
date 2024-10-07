@@ -720,6 +720,81 @@ pub struct QueryUpgradedConsensusStateResponse {
     #[prost(message, optional, tag = "1")]
     pub upgraded_consensus_state: ::core::option::Option<crate::shim::Any>,
 }
+/// QueryVerifyMembershipRequest is the request type for the Query/VerifyMembership RPC method
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/ibc.core.client.v1.QueryVerifyMembershipRequest")]
+#[proto_query(
+    path = "/ibc.core.client.v1.Query/VerifyMembership",
+    response_type = QueryVerifyMembershipResponse
+)]
+pub struct QueryVerifyMembershipRequest {
+    /// client unique identifier.
+    #[prost(string, tag = "1")]
+    #[serde(alias = "clientID")]
+    pub client_id: ::prost::alloc::string::String,
+    /// the proof to be verified by the client.
+    #[prost(bytes = "vec", tag = "2")]
+    #[serde(
+        serialize_with = "crate::serde::as_base64_encoded_string::serialize",
+        deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
+    )]
+    pub proof: ::prost::alloc::vec::Vec<u8>,
+    /// the height of the commitment root at which the proof is verified.
+    #[prost(message, optional, tag = "3")]
+    pub proof_height: ::core::option::Option<Height>,
+    /// the commitment key path.
+    #[prost(message, optional, tag = "4")]
+    pub merkle_path: ::core::option::Option<super::super::commitment::v1::MerklePath>,
+    /// the value which is proven.
+    #[prost(bytes = "vec", tag = "5")]
+    #[serde(
+        serialize_with = "crate::serde::as_base64_encoded_string::serialize",
+        deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
+    )]
+    pub value: ::prost::alloc::vec::Vec<u8>,
+    /// optional time delay
+    #[prost(uint64, tag = "6")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub time_delay: u64,
+    /// optional block delay
+    #[prost(uint64, tag = "7")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub block_delay: u64,
+}
+/// QueryVerifyMembershipResponse is the response type for the Query/VerifyMembership RPC method
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/ibc.core.client.v1.QueryVerifyMembershipResponse")]
+pub struct QueryVerifyMembershipResponse {
+    /// boolean indicating success or failure of proof verification.
+    #[prost(bool, tag = "1")]
+    pub success: bool,
+}
 /// MsgCreateClient defines a message to create an IBC client
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -1102,5 +1177,26 @@ impl<'a, Q: cosmwasm_std::CustomQuery> ClientQuerier<'a, Q> {
         &self,
     ) -> Result<QueryUpgradedConsensusStateResponse, cosmwasm_std::StdError> {
         QueryUpgradedConsensusStateRequest {}.query(self.querier)
+    }
+    pub fn verify_membership(
+        &self,
+        client_id: ::prost::alloc::string::String,
+        proof: ::prost::alloc::vec::Vec<u8>,
+        proof_height: ::core::option::Option<Height>,
+        merkle_path: ::core::option::Option<super::super::commitment::v1::MerklePath>,
+        value: ::prost::alloc::vec::Vec<u8>,
+        time_delay: u64,
+        block_delay: u64,
+    ) -> Result<QueryVerifyMembershipResponse, cosmwasm_std::StdError> {
+        QueryVerifyMembershipRequest {
+            client_id,
+            proof,
+            proof_height,
+            merkle_path,
+            value,
+            time_delay,
+            block_delay,
+        }
+        .query(self.querier)
     }
 }
