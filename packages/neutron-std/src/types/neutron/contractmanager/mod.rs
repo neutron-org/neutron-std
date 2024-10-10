@@ -132,34 +132,10 @@ pub struct QueryParamsResponse {
 )]
 #[proto_message(type_url = "/neutron.contractmanager.QueryFailuresRequest")]
 #[proto_query(
-    path = "/neutron.contractmanager.Query/AddressFailures",
+    path = "/neutron.contractmanager.Query/AddressFailure",
     response_type = QueryFailuresResponse
 )]
 pub struct QueryFailuresRequest {
-    /// address of the contract which Sudo call failed.
-    #[prost(string, tag = "1")]
-    pub address: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
-}
-/// QueryFailureRequest is request type for the Query/Failures RPC method.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(
-    Clone,
-    PartialEq,
-    Eq,
-    ::prost::Message,
-    ::serde::Serialize,
-    ::serde::Deserialize,
-    ::schemars::JsonSchema,
-    CosmwasmExt,
-)]
-#[proto_message(type_url = "/neutron.contractmanager.QueryFailureRequest")]
-#[proto_query(
-    path = "/neutron.contractmanager.Query/AddressFailure",
-    response_type = QueryFailureResponse
-)]
-pub struct QueryFailureRequest {
     /// address of the contract which Sudo call failed.
     #[prost(string, tag = "1")]
     pub address: ::prost::alloc::string::String,
@@ -171,23 +147,8 @@ pub struct QueryFailureRequest {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub failure_id: u64,
-}
-/// QueryFailureResponse is response type for the Query/Failure RPC method.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(
-    Clone,
-    PartialEq,
-    Eq,
-    ::prost::Message,
-    ::serde::Serialize,
-    ::serde::Deserialize,
-    ::schemars::JsonSchema,
-    CosmwasmExt,
-)]
-#[proto_message(type_url = "/neutron.contractmanager.QueryFailureResponse")]
-pub struct QueryFailureResponse {
-    #[prost(message, optional, tag = "1")]
-    pub failure: ::core::option::Option<Failure>,
+    #[prost(message, optional, tag = "3")]
+    pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }
 /// QueryFailuresResponse is response type for the Query/Failures RPC method.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -265,20 +226,24 @@ impl<'a, Q: cosmwasm_std::CustomQuery> ContractmanagerQuerier<'a, Q> {
         &self,
         address: ::prost::alloc::string::String,
         failure_id: u64,
-    ) -> Result<QueryFailureResponse, cosmwasm_std::StdError> {
-        QueryFailureRequest {
+        pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
+    ) -> Result<QueryFailuresResponse, cosmwasm_std::StdError> {
+        QueryFailuresRequest {
             address,
             failure_id,
+            pagination,
         }
         .query(self.querier)
     }
     pub fn address_failures(
         &self,
         address: ::prost::alloc::string::String,
+        failure_id: u64,
         pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
     ) -> Result<QueryFailuresResponse, cosmwasm_std::StdError> {
         QueryFailuresRequest {
             address,
+            failure_id,
             pagination,
         }
         .query(self.querier)
@@ -286,10 +251,12 @@ impl<'a, Q: cosmwasm_std::CustomQuery> ContractmanagerQuerier<'a, Q> {
     pub fn failures(
         &self,
         address: ::prost::alloc::string::String,
+        failure_id: u64,
         pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
     ) -> Result<QueryFailuresResponse, cosmwasm_std::StdError> {
         QueryFailuresRequest {
             address,
+            failure_id,
             pagination,
         }
         .query(self.querier)
