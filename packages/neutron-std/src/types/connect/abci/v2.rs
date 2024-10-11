@@ -11,7 +11,7 @@ use neutron_std_derive::CosmwasmExt;
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.abci.v1.OracleVoteExtension")]
+#[proto_message(type_url = "/connect.abci.v2.OracleVoteExtension")]
 pub struct OracleVoteExtension {
     /// Prices defines a map of id(CurrencyPair) -> price.Bytes() . i.e. 1 ->
     /// 0x123.. (bytes). Notice the `id` function is determined by the

@@ -11,7 +11,7 @@ use neutron_std_derive::CosmwasmExt;
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.module.v1.Module")]
+#[proto_message(type_url = "/connect.oracle.module.v2.Module")]
 pub struct Module {
     /// Authority defines the custom module authority. If not set, defaults to the
     /// governance module.

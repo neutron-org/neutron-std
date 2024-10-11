@@ -12,7 +12,7 @@ use neutron_std_derive::CosmwasmExt;
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.QuotePrice")]
+#[proto_message(type_url = "/connect.oracle.v2.QuotePrice")]
 pub struct QuotePrice {
     #[prost(string, tag = "1")]
     pub price: ::prost::alloc::string::String,
@@ -42,7 +42,7 @@ pub struct QuotePrice {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.CurrencyPairState")]
+#[proto_message(type_url = "/connect.oracle.v2.CurrencyPairState")]
 pub struct CurrencyPairState {
     /// QuotePrice is the latest price for a currency-pair, notice this value can
     /// be null in the case that no price exists for the currency-pair
@@ -77,11 +77,11 @@ pub struct CurrencyPairState {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.CurrencyPairGenesis")]
+#[proto_message(type_url = "/connect.oracle.v2.CurrencyPairGenesis")]
 pub struct CurrencyPairGenesis {
     /// The CurrencyPair to be added to module state
     #[prost(message, optional, tag = "1")]
-    pub currency_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+    pub currency_pair: ::core::option::Option<super::super::types::v2::CurrencyPair>,
     /// A genesis price if one exists (note this will be empty, unless it results
     /// from forking the state of this module)
     #[prost(message, optional, tag = "2")]
@@ -116,7 +116,7 @@ pub struct CurrencyPairGenesis {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GenesisState")]
+#[proto_message(type_url = "/connect.oracle.v2.GenesisState")]
 pub struct GenesisState {
     /// CurrencyPairGenesis is the set of CurrencyPairGeneses for the module. I.e
     /// the starting set of CurrencyPairs for the module + information regarding
@@ -143,9 +143,9 @@ pub struct GenesisState {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetAllCurrencyPairsRequest")]
+#[proto_message(type_url = "/connect.oracle.v2.GetAllCurrencyPairsRequest")]
 #[proto_query(
-    path = "/slinky.oracle.v1.Query/GetAllCurrencyPairs",
+    path = "/connect.oracle.v2.Query/GetAllCurrencyPairs",
     response_type = GetAllCurrencyPairsResponse
 )]
 pub struct GetAllCurrencyPairsRequest {}
@@ -162,12 +162,12 @@ pub struct GetAllCurrencyPairsRequest {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetAllCurrencyPairsResponse")]
+#[proto_message(type_url = "/connect.oracle.v2.GetAllCurrencyPairsResponse")]
 pub struct GetAllCurrencyPairsResponse {
     #[prost(message, repeated, tag = "1")]
-    pub currency_pairs: ::prost::alloc::vec::Vec<super::super::types::v1::CurrencyPair>,
+    pub currency_pairs: ::prost::alloc::vec::Vec<super::super::types::v2::CurrencyPair>,
 }
-/// GetPriceRequest either takes a CurrencyPair, or an identifier for the
+/// GetPriceRequest takes an identifier for the
 /// CurrencyPair in the format base/quote.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -180,15 +180,15 @@ pub struct GetAllCurrencyPairsResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetPriceRequest")]
+#[proto_message(type_url = "/connect.oracle.v2.GetPriceRequest")]
 #[proto_query(
-    path = "/slinky.oracle.v1.Query/GetPrice",
+    path = "/connect.oracle.v2.Query/GetPrice",
     response_type = GetPriceResponse
 )]
 pub struct GetPriceRequest {
     /// CurrencyPair represents the pair that the user wishes to query.
-    #[prost(message, optional, tag = "1")]
-    pub currency_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+    #[prost(string, tag = "1")]
+    pub currency_pair: ::prost::alloc::string::String,
 }
 /// GetPriceResponse is the response from the GetPrice grpc method exposed from
 /// the x/oracle query service.
@@ -203,7 +203,7 @@ pub struct GetPriceRequest {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetPriceResponse")]
+#[proto_message(type_url = "/connect.oracle.v2.GetPriceResponse")]
 pub struct GetPriceResponse {
     /// QuotePrice represents the quote-price for the CurrencyPair given in
     /// GetPriceRequest (possibly nil if no update has been made)
@@ -217,8 +217,7 @@ pub struct GetPriceResponse {
     )]
     pub nonce: u64,
     /// decimals represents the number of decimals that the quote-price is
-    /// represented in. For Pairs where ETHEREUM is the quote this will be 18,
-    /// otherwise it will be 8.
+    /// represented in. It is used to scale the QuotePrice to its proper value.
     #[prost(uint64, tag = "3")]
     #[serde(
         serialize_with = "crate::serde::as_str::serialize",
@@ -247,9 +246,9 @@ pub struct GetPriceResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetPricesRequest")]
+#[proto_message(type_url = "/connect.oracle.v2.GetPricesRequest")]
 #[proto_query(
-    path = "/slinky.oracle.v1.Query/GetPrices",
+    path = "/connect.oracle.v2.Query/GetPrices",
     response_type = GetPricesResponse
 )]
 pub struct GetPricesRequest {
@@ -270,7 +269,7 @@ pub struct GetPricesRequest {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetPricesResponse")]
+#[proto_message(type_url = "/connect.oracle.v2.GetPricesResponse")]
 pub struct GetPricesResponse {
     #[prost(message, repeated, tag = "1")]
     pub prices: ::prost::alloc::vec::Vec<GetPriceResponse>,
@@ -287,9 +286,9 @@ pub struct GetPricesResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetCurrencyPairMappingRequest")]
+#[proto_message(type_url = "/connect.oracle.v2.GetCurrencyPairMappingRequest")]
 #[proto_query(
-    path = "/slinky.oracle.v1.Query/GetCurrencyPairMapping",
+    path = "/connect.oracle.v2.Query/GetCurrencyPairMapping",
     response_type = GetCurrencyPairMappingResponse
 )]
 pub struct GetCurrencyPairMappingRequest {}
@@ -305,13 +304,13 @@ pub struct GetCurrencyPairMappingRequest {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.GetCurrencyPairMappingResponse")]
+#[proto_message(type_url = "/connect.oracle.v2.GetCurrencyPairMappingResponse")]
 pub struct GetCurrencyPairMappingResponse {
     /// currency_pair_mapping is a mapping of the id representing the currency pair
     /// to the currency pair itself.
     #[prost(map = "uint64, message", tag = "1")]
     pub currency_pair_mapping:
-        ::std::collections::HashMap<u64, super::super::types::v1::CurrencyPair>,
+        ::std::collections::HashMap<u64, super::super::types::v2::CurrencyPair>,
 }
 /// Given an authority + a set of CurrencyPairs, the x/oracle module will
 /// check to see that the authority has permissions to update the set of
@@ -328,7 +327,7 @@ pub struct GetCurrencyPairMappingResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.MsgAddCurrencyPairs")]
+#[proto_message(type_url = "/connect.oracle.v2.MsgAddCurrencyPairs")]
 pub struct MsgAddCurrencyPairs {
     /// authority is the address of the account that is authorized to update the
     /// x/oracle's CurrencyPairs
@@ -337,7 +336,7 @@ pub struct MsgAddCurrencyPairs {
     /// set of CurrencyPairs to be added to the module (+ prices if they are to be
     /// set)
     #[prost(message, repeated, tag = "2")]
-    pub currency_pairs: ::prost::alloc::vec::Vec<super::super::types::v1::CurrencyPair>,
+    pub currency_pairs: ::prost::alloc::vec::Vec<super::super::types::v2::CurrencyPair>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -350,7 +349,7 @@ pub struct MsgAddCurrencyPairs {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.MsgAddCurrencyPairsResponse")]
+#[proto_message(type_url = "/connect.oracle.v2.MsgAddCurrencyPairsResponse")]
 pub struct MsgAddCurrencyPairsResponse {}
 /// Given an authority + a set of CurrencyPairIDs, the x/oracle module's message
 /// service will remove all of the CurrencyPairs identified by each
@@ -368,7 +367,7 @@ pub struct MsgAddCurrencyPairsResponse {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.MsgRemoveCurrencyPairs")]
+#[proto_message(type_url = "/connect.oracle.v2.MsgRemoveCurrencyPairs")]
 pub struct MsgRemoveCurrencyPairs {
     /// authority is the address of the account that is authorized to update the
     /// x/oracle's CurrencyPairs
@@ -391,7 +390,7 @@ pub struct MsgRemoveCurrencyPairs {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.oracle.v1.MsgRemoveCurrencyPairsResponse")]
+#[proto_message(type_url = "/connect.oracle.v2.MsgRemoveCurrencyPairsResponse")]
 pub struct MsgRemoveCurrencyPairsResponse {}
 pub struct OracleQuerier<'a, Q: cosmwasm_std::CustomQuery> {
     querier: &'a cosmwasm_std::QuerierWrapper<'a, Q>,
@@ -407,7 +406,7 @@ impl<'a, Q: cosmwasm_std::CustomQuery> OracleQuerier<'a, Q> {
     }
     pub fn get_price(
         &self,
-        currency_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+        currency_pair: ::prost::alloc::string::String,
     ) -> Result<GetPriceResponse, cosmwasm_std::StdError> {
         GetPriceRequest { currency_pair }.query(self.querier)
     }

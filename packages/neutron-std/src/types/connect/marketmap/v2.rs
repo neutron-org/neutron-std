@@ -11,7 +11,7 @@ use neutron_std_derive::CosmwasmExt;
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.Market")]
+#[proto_message(type_url = "/connect.marketmap.v2.Market")]
 pub struct Market {
     /// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The
     /// price feed is scaled to a number of decimal places and has a minimum number
@@ -36,11 +36,11 @@ pub struct Market {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.Ticker")]
+#[proto_message(type_url = "/connect.marketmap.v2.Ticker")]
 pub struct Ticker {
     /// CurrencyPair is the currency pair for this ticker.
     #[prost(message, optional, tag = "1")]
-    pub currency_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+    pub currency_pair: ::core::option::Option<super::super::types::v2::CurrencyPair>,
     /// Decimals is the number of decimal places for the ticker. The number of
     /// decimal places is used to convert the price to a human-readable format.
     #[prost(uint64, tag = "2")]
@@ -77,7 +77,7 @@ pub struct Ticker {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.ProviderConfig")]
+#[proto_message(type_url = "/connect.marketmap.v2.ProviderConfig")]
 pub struct ProviderConfig {
     /// Name corresponds to the name of the provider for which the configuration is
     /// being set.
@@ -93,7 +93,7 @@ pub struct ProviderConfig {
     /// using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
     /// optional and nullable.
     #[prost(message, optional, tag = "3")]
-    pub normalize_by_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+    pub normalize_by_pair: ::core::option::Option<super::super::types::v2::CurrencyPair>,
     /// Invert is a boolean indicating if the BASE and QUOTE of the market should
     /// be inverted. i.e. BASE -> QUOTE, QUOTE -> BASE
     #[prost(bool, tag = "4")]
@@ -115,7 +115,7 @@ pub struct ProviderConfig {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MarketMap")]
+#[proto_message(type_url = "/connect.marketmap.v2.MarketMap")]
 pub struct MarketMap {
     /// Markets is the full list of tickers and their associated configurations
     /// to be stored on-chain.
@@ -134,7 +134,7 @@ pub struct MarketMap {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.Params")]
+#[proto_message(type_url = "/connect.marketmap.v2.Params")]
 pub struct Params {
     /// MarketAuthorities is the list of authority accounts that are able to
     /// control updating the marketmap.
@@ -157,7 +157,7 @@ pub struct Params {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.GenesisState")]
+#[proto_message(type_url = "/connect.marketmap.v2.GenesisState")]
 pub struct GenesisState {
     /// MarketMap defines the global set of market configurations for all providers
     /// and markets.
@@ -189,9 +189,9 @@ pub struct GenesisState {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MarketMapRequest")]
+#[proto_message(type_url = "/connect.marketmap.v2.MarketMapRequest")]
 #[proto_query(
-    path = "/slinky.marketmap.v1.Query/MarketMap",
+    path = "/connect.marketmap.v2.Query/MarketMap",
     response_type = MarketMapResponse
 )]
 pub struct MarketMapRequest {}
@@ -207,7 +207,7 @@ pub struct MarketMapRequest {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MarketMapResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.MarketMapResponse")]
 pub struct MarketMapResponse {
     /// MarketMap defines the global set of market configurations for all providers
     /// and markets.
@@ -240,16 +240,16 @@ pub struct MarketMapResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MarketRequest")]
+#[proto_message(type_url = "/connect.marketmap.v2.MarketRequest")]
 #[proto_query(
-    path = "/slinky.marketmap.v1.Query/Market",
+    path = "/connect.marketmap.v2.Query/Market",
     response_type = MarketResponse
 )]
 pub struct MarketRequest {
     /// CurrencyPair is the currency pair associated with the market being
     /// requested.
     #[prost(message, optional, tag = "1")]
-    pub currency_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+    pub currency_pair: ::core::option::Option<super::super::types::v2::CurrencyPair>,
 }
 /// MarketResponse is the query response for the Market query.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -263,7 +263,7 @@ pub struct MarketRequest {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MarketResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.MarketResponse")]
 pub struct MarketResponse {
     /// Market is the configuration of a single market to be price-fetched for.
     #[prost(message, optional, tag = "1")]
@@ -281,9 +281,9 @@ pub struct MarketResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.ParamsRequest")]
+#[proto_message(type_url = "/connect.marketmap.v2.ParamsRequest")]
 #[proto_query(
-    path = "/slinky.marketmap.v1.Query/Params",
+    path = "/connect.marketmap.v2.Query/Params",
     response_type = ParamsResponse
 )]
 pub struct ParamsRequest {}
@@ -299,7 +299,7 @@ pub struct ParamsRequest {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.ParamsResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.ParamsResponse")]
 pub struct ParamsResponse {
     #[prost(message, optional, tag = "1")]
     pub params: ::core::option::Option<Params>,
@@ -317,9 +317,9 @@ pub struct ParamsResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.LastUpdatedRequest")]
+#[proto_message(type_url = "/connect.marketmap.v2.LastUpdatedRequest")]
 #[proto_query(
-    path = "/slinky.marketmap.v1.Query/LastUpdated",
+    path = "/connect.marketmap.v2.Query/LastUpdated",
     response_type = LastUpdatedResponse
 )]
 pub struct LastUpdatedRequest {}
@@ -336,7 +336,7 @@ pub struct LastUpdatedRequest {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.LastUpdatedResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.LastUpdatedResponse")]
 pub struct LastUpdatedResponse {
     #[prost(uint64, tag = "1")]
     #[serde(
@@ -344,6 +344,51 @@ pub struct LastUpdatedResponse {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub last_updated: u64,
+}
+/// MsgUpsertMarkets defines a message carrying a payload for performing market
+/// upserts (update or create if does not exist) in the x/marketmap module.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgUpsertMarkets")]
+pub struct MsgUpsertMarkets {
+    /// Authority is the signer of this transaction.  This authority must be
+    /// authorized by the module to execute the message.
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// CreateMarkets is the list of all markets to be created for the given
+    /// transaction.
+    #[prost(message, repeated, tag = "2")]
+    pub markets: ::prost::alloc::vec::Vec<Market>,
+}
+/// MsgUpsertMarketsResponse is the response from the UpsertMarkets API in the
+/// x/marketmap module.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgUpsertMarketsResponse")]
+pub struct MsgUpsertMarketsResponse {
+    /// UpdatedMarkets is a map between the ticker and whether the market was
+    /// updated.
+    /// Deprecated: This field will be empty in all responses.
+    #[prost(map = "string, bool", tag = "1")]
+    pub market_updates: ::std::collections::HashMap<::prost::alloc::string::String, bool>,
 }
 /// MsgCreateMarkets defines a message carrying a payload for creating markets in
 /// the x/marketmap module.
@@ -358,7 +403,7 @@ pub struct LastUpdatedResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgCreateMarkets")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgCreateMarkets")]
 pub struct MsgCreateMarkets {
     /// Authority is the signer of this transaction.  This authority must be
     /// authorized by the module to execute the message.
@@ -381,7 +426,7 @@ pub struct MsgCreateMarkets {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgCreateMarketsResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgCreateMarketsResponse")]
 pub struct MsgCreateMarketsResponse {}
 /// MsgUpdateMarkets defines a message carrying a payload for updating the
 /// x/marketmap module.
@@ -396,7 +441,7 @@ pub struct MsgCreateMarketsResponse {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgUpdateMarkets")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgUpdateMarkets")]
 pub struct MsgUpdateMarkets {
     /// Authority is the signer of this transaction.  This authority must be
     /// authorized by the module to execute the message.
@@ -419,7 +464,7 @@ pub struct MsgUpdateMarkets {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgUpdateMarketsResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgUpdateMarketsResponse")]
 pub struct MsgUpdateMarketsResponse {}
 /// MsgParams defines the Msg/Params request type. It contains the
 /// new parameters for the x/marketmap module.
@@ -434,7 +479,7 @@ pub struct MsgUpdateMarketsResponse {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgParams")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgParams")]
 pub struct MsgParams {
     /// Params defines the new parameters for the x/marketmap module.
     #[prost(message, optional, tag = "1")]
@@ -456,7 +501,7 @@ pub struct MsgParams {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgParamsResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgParamsResponse")]
 pub struct MsgParamsResponse {}
 /// MsgRemoveMarketAuthorities defines the Msg/RemoveMarketAuthoritiesResponse
 /// request type. It contains the new addresses to remove from the list of
@@ -472,7 +517,7 @@ pub struct MsgParamsResponse {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgRemoveMarketAuthorities")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgRemoveMarketAuthorities")]
 pub struct MsgRemoveMarketAuthorities {
     /// RemoveAddresses is the list of addresses to remove.
     #[prost(string, repeated, tag = "1")]
@@ -495,7 +540,7 @@ pub struct MsgRemoveMarketAuthorities {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/slinky.marketmap.v1.MsgRemoveMarketAuthoritiesResponse")]
+#[proto_message(type_url = "/connect.marketmap.v2.MsgRemoveMarketAuthoritiesResponse")]
 pub struct MsgRemoveMarketAuthoritiesResponse {}
 pub struct MarketmapQuerier<'a, Q: cosmwasm_std::CustomQuery> {
     querier: &'a cosmwasm_std::QuerierWrapper<'a, Q>,
@@ -509,7 +554,7 @@ impl<'a, Q: cosmwasm_std::CustomQuery> MarketmapQuerier<'a, Q> {
     }
     pub fn market(
         &self,
-        currency_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+        currency_pair: ::core::option::Option<super::super::types::v2::CurrencyPair>,
     ) -> Result<MarketResponse, cosmwasm_std::StdError> {
         MarketRequest { currency_pair }.query(self.querier)
     }

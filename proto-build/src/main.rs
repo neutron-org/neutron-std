@@ -23,7 +23,7 @@ const SLINKY_REPO: &str = "https://github.com/skip-mev/slinky.git";
 const COSMOS_SDK_REV: &str = "v0.50.9-neutron";
 
 /// The Neutron commit or tag to be cloned and used to build the proto files
-const NEUTRON_REV: &str = "main";
+const NEUTRON_REV: &str = "chore/ics-v6";
 
 /// The wasmd commit or tag to be cloned and used to build the proto files
 const WASMD_REV: &str = "v0.53.0-neutron";
@@ -35,11 +35,11 @@ const COMETBFT_REV: &str = "v0.38.11";
 const IBC_GO_REV: &str = "v8.5.1";
 
 /// The ics23 commit or tag to be cloned and used to build the proto files
-const ICS23_REV: &str = "go/v0.10.0";
+const ICS23_REV: &str = "go/v0.11.0";
 
 const FEEMARKET_REV: &str = "v1.1.1";
 
-const SLINKY_REV: &str = "v1.0.3";
+const SLINKY_REV: &str = "v2.0.1";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
