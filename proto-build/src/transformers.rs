@@ -529,23 +529,6 @@ fn extract_deprecation_from_descriptor(
     message_type.iter().find_map(|descriptor| {
         let message_name = descriptor.name.to_owned().unwrap();
 
-        // info!("{}->{:?}", message_name, descriptor);
-        for field in descriptor.field.clone().into_iter() {
-            if field.options.is_some() {
-                // for option in field.options.unwrap().uninterpreted_option.iter() {
-                // info!(
-                //     "{} {:?}",
-                //     target,
-                //     option
-                //         .name
-                //         .iter()
-                //         .map(|x| x.name_part.clone())
-                //         .collect::<Vec<String>>()
-                // );
-                // }
-            }
-        }
-
         if message_name.to_upper_camel_case() == target {
             descriptor.clone().options.deprecated
         } else if let Some(deprecated) =
