@@ -174,6 +174,18 @@ pub fn allow_serde_int_as_str(s: ItemStruct) -> ItemStruct {
                 parse_quote!(u64),
                 parse_quote!(u128),
                 parse_quote!(usize),
+                parse_quote!(::core::option::Option<i8>),
+                parse_quote!(::core::option::Option<i16>),
+                parse_quote!(::core::option::Option<i32>),
+                parse_quote!(::core::option::Option<i64>),
+                parse_quote!(::core::option::Option<i128>),
+                parse_quote!(::core::option::Option<isize>),
+                parse_quote!(::core::option::Option<u8>),
+                parse_quote!(::core::option::Option<u16>),
+                parse_quote!(::core::option::Option<u32>),
+                parse_quote!(::core::option::Option<u64>),
+                parse_quote!(::core::option::Option<u128>),
+                parse_quote!(::core::option::Option<usize>),
             ];
 
             if int_types.contains(&field.ty) {

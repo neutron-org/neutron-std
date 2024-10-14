@@ -89,6 +89,10 @@ pub struct Params {
     /// See: <https://github.com/CosmWasm/token-factory/issues/11>
     #[prost(uint64, tag = "2")]
     #[prost(optional)]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
     pub denom_creation_gas_consume: ::core::option::Option<u64>,
     /// FeeCollectorAddress is the address where fees collected from denom creation
     /// are sent to
