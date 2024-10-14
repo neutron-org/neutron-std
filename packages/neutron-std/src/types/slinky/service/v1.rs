@@ -27,12 +27,16 @@ pub struct QueryPricesRequest {}
 )]
 #[proto_message(type_url = "/slinky.service.v1.QueryPricesResponse")]
 pub struct QueryPricesResponse {
-    /// prices defines the list of prices.
+    /// Prices defines the list of prices.
     #[prost(map = "string, string", tag = "1")]
     pub prices:
         ::std::collections::HashMap<::prost::alloc::string::String, ::prost::alloc::string::String>,
+    /// Timestamp defines the timestamp of the prices.
     #[prost(message, optional, tag = "2")]
     pub timestamp: ::core::option::Option<crate::shim::Timestamp>,
+    /// Version defines the version of the oracle service that provided the prices.
+    #[prost(string, tag = "3")]
+    pub version: ::prost::alloc::string::String,
 }
 /// QueryMarketMapRequest defines the request type for the MarketMap method.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -62,7 +66,39 @@ pub struct QueryMarketMapRequest {}
 )]
 #[proto_message(type_url = "/slinky.service.v1.QueryMarketMapResponse")]
 pub struct QueryMarketMapResponse {
-    /// market_map defines the current market map configuration.
+    /// MarketMap defines the current market map configuration.
     #[prost(message, optional, tag = "1")]
     pub market_map: ::core::option::Option<super::super::marketmap::v1::MarketMap>,
+}
+/// QueryVersionRequest defines the request type for the Version method.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.service.v1.QueryVersionRequest")]
+pub struct QueryVersionRequest {}
+/// QueryVersionResponse defines the response type for the Version method.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.service.v1.QueryVersionResponse")]
+pub struct QueryVersionResponse {
+    /// Version defines the current version of the oracle service.
+    #[prost(string, tag = "1")]
+    pub version: ::prost::alloc::string::String,
 }
