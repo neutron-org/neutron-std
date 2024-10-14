@@ -1,3 +1,5 @@
+// Helps (de)serialize ints as str
+// Cause some structs in Cosmos SDK returns ints as strs
 pub mod as_str {
     use serde::{de, Deserialize, Deserializer, Serializer};
     use std::{fmt::Display, str::FromStr};
@@ -21,11 +23,12 @@ pub mod as_str {
     }
 }
 
+// Helps (de)serialize Option<int|uint|...|usize> as Option<str>
+// Cause some structs in Cosmos SDK returns ints as strs
 pub mod option_int_as_str {
     use serde::{de, Deserialize, Deserializer, Serializer};
     use std::{fmt::Display, str::FromStr};
 
-    // str -> option<int>
     pub fn deserialize<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
     where
         T: FromStr,
@@ -34,19 +37,11 @@ pub mod option_int_as_str {
     {
         let encoded_string: Option<String> = Option::deserialize(deserializer)?;
         match encoded_string {
-            Some(s) => {
-                let s = T::from_str(&s);
-                if s.is_err() {
-                    Err(de::Error::custom(s.err().unwrap()))
-                } else {
-                    Ok(Some(s.ok().unwrap()))
-                }
-            }
+            Some(s) => T::from_str(&s).map(Some).map_err(de::Error::custom),
             None => Ok(None),
         }
     }
 
-    // option<int> -> str
     pub fn serialize<S, T>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,

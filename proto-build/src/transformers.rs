@@ -37,6 +37,10 @@ pub const REPLACEMENTS: &[(&str, &str)] = &[
     ),
 ];
 
+// 65001 is a number of nullable field
+// https://github.com/cosmos/gogoproto/blob/28b2facaa30178e137477bcc756a72a7a3c84b6b/gogoproto/gogo.proto#L130
+const GOGOPROTO_NULLABLE_EXTENSION_FIELD_NUMBER: u32 = 65001;
+
 pub fn add_derive_eq(mut attr: Attribute) -> Attribute {
     // find derive attribute
     if attr.path.is_ident("derive") {
@@ -365,22 +369,34 @@ fn is_field_gogoproto_nullable(
 ) -> bool {
     for file in descriptor.file.iter() {
         for message in file.clone().message_type {
+            // not a message we are searching for
             if message.name() != message_name {
                 continue;
             }
 
             for field in message.clone().field {
+                // not a field we are searching for
                 if field.name() != field_name {
                     continue;
                 }
 
-                // 65001 is a number of nullable tag
-                // https://github.com/cosmos/gogoproto/blob/28b2facaa30178e137477bcc756a72a7a3c84b6b/gogoproto/gogo.proto#L130
-                let sf = field.options.special_fields.unknown_fields().get(65001);
+                // rust-protobuf can't parse option extensions properly (or i did not find a way for that),
+                // so all options extensions are located in special_fields->unknown_fields after a parsing
+                let sf = field
+                    .options
+                    .special_fields
+                    .unknown_fields()
+                    .get(GOGOPROTO_NULLABLE_EXTENSION_FIELD_NUMBER);
 
                 let is_gogoproto_nullabe = if let Some(v) = sf {
                     match v {
-                        protobuf::UnknownValueRef::Varint(u) => u > 0,
+                        // Varint(1) => gogoproto.nullable = true
+                        // Varint(0) => gogoproto.nullable = false
+                        // any other enum values (Fixed32, Fixed64, ...) => this means under GOGOPROTO_NULLABLE_EXTENSION_FIELD_NUMBER
+                        // field is contained some other stuff, that is not gogoproto at all (which is highly unlikely)
+                        // let's mark it as unimplemented for now.
+                        // if we really encounter this, we'll come up with some solution
+                        protobuf::UnknownValueRef::Varint(u) => u == 1,
                         _ => unimplemented!(),
                     }
                 } else {
@@ -399,11 +415,17 @@ pub fn respect_gogoproto_nullable(
     mut s: ItemStruct,
     descriptor: &protobuf::descriptor::FileDescriptorSet,
 ) -> ItemStruct {
+    // iterating over the fields in a message
     if let Fields::Named(ref mut fields_named) = s.fields {
         for field in fields_named.named.iter_mut() {
             if let Some(ident) = &field.ident {
+                // if a field has an option `gogoproto.nullable = true`
                 if is_field_gogoproto_nullable(&s.ident.to_string(), &ident.to_string(), descriptor)
                 {
+                    // check if it's already marked as optional by prost
+                    // this may happen if:
+                    // * field has a nested structure type (not scalar, e.g. string, int, bool, etc.)
+                    // * field is vector
                     let already_optional = field.attrs.iter().any(|attr| {
                         attr.path.is_ident("prost")
                             && (attr.to_token_stream().to_string().contains("optional")
@@ -411,9 +433,12 @@ pub fn respect_gogoproto_nullable(
                     });
 
                     if !already_optional {
+                        // get a string representation of a field's type
                         let ts = field.ty.to_token_stream();
+                        // wrap it into option
                         field.ty = parse_quote!(::core::option::Option<#ts>);
 
+                        // and add a prost #[prost(optional)] macros to notify prost about field's optionality
                         let optional_attr = parse_quote! {
                             #[prost(optional)]
                         };
