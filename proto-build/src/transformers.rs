@@ -174,6 +174,38 @@ pub fn allow_serde_int_as_str(s: ItemStruct) -> ItemStruct {
                 parse_quote!(u64),
                 parse_quote!(u128),
                 parse_quote!(usize),
+            ];
+
+            if int_types.contains(&field.ty) {
+                let from_str: syn::Attribute = parse_quote! {
+                    #[serde(
+                        serialize_with = "crate::serde::as_str::serialize",
+                        deserialize_with = "crate::serde::as_str::deserialize"
+                    )]
+                };
+                field.attrs.append(&mut vec![from_str]);
+                field
+            } else {
+                field
+            }
+        })
+        .collect::<Vec<syn::Field>>();
+
+    let fields_named: syn::FieldsNamed = parse_quote! {
+        { #(#fields_vec,)* }
+    };
+    let fields = syn::Fields::Named(fields_named);
+
+    syn::ItemStruct { fields, ..s }
+}
+
+pub fn allow_serde_option_int_as_str(s: ItemStruct) -> ItemStruct {
+    let fields_vec = s
+        .fields
+        .clone()
+        .into_iter()
+        .map(|mut field| {
+            let int_types = vec![
                 parse_quote!(::core::option::Option<i8>),
                 parse_quote!(::core::option::Option<i16>),
                 parse_quote!(::core::option::Option<i32>),
@@ -191,8 +223,8 @@ pub fn allow_serde_int_as_str(s: ItemStruct) -> ItemStruct {
             if int_types.contains(&field.ty) {
                 let from_str: syn::Attribute = parse_quote! {
                     #[serde(
-                        serialize_with = "crate::serde::as_str::serialize",
-                        deserialize_with = "crate::serde::as_str::deserialize"
+                        serialize_with = "crate::serde::option_int_as_str::serialize",
+                        deserialize_with = "crate::serde::option_int_as_str::deserialize"
                     )]
                 };
                 field.attrs.append(&mut vec![from_str]);

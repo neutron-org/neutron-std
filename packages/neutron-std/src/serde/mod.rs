@@ -21,6 +21,44 @@ pub mod as_str {
     }
 }
 
+pub mod option_int_as_str {
+    use serde::{de, Deserialize, Deserializer, Serializer};
+    use std::{fmt::Display, str::FromStr};
+
+    // str -> option<int>
+    pub fn deserialize<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
+    where
+        T: FromStr,
+        T::Err: Display,
+        D: Deserializer<'de>,
+    {
+        let encoded_string: Option<String> = Option::deserialize(deserializer)?;
+        match encoded_string {
+            Some(s) => {
+                let s = T::from_str(&s);
+                if s.is_err() {
+                    Err(de::Error::custom(s.err().unwrap()))
+                } else {
+                    Ok(Some(s.ok().unwrap()))
+                }
+            }
+            None => Ok(None),
+        }
+    }
+
+    // option<int> -> str
+    pub fn serialize<S, T>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+        T: Display,
+    {
+        match value {
+            None => serializer.serialize_none(),
+            Some(v) => serializer.serialize_str(&v.to_string()),
+        }
+    }
+}
+
 pub mod as_str_vec {
     use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
     use std::{fmt::Display, str::FromStr};
