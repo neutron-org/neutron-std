@@ -454,6 +454,11 @@ pub struct MsgPlaceLimitOrder {
     pub max_amount_out: ::prost::alloc::string::String,
     #[prost(string, tag = "11")]
     pub limit_sell_price: ::prost::alloc::string::String,
+    /// min_average_sell_price is an optional parameter that sets a required minimum average price for the entire trade.
+    /// if the min_average_sell_price is not met the trade will fail.
+    /// If min_average_sell_price is omitted limit_sell_price will be used instead
+    #[prost(string, tag = "12")]
+    pub min_average_sell_price: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
