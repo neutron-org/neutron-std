@@ -251,6 +251,47 @@ pub struct MsgUpdateParams {
 )]
 #[proto_message(type_url = "/neutron.contractmanager.MsgUpdateParamsResponse")]
 pub struct MsgUpdateParamsResponse {}
+/// MsgResubmitFailure - contract that has failed acknowledgement can resubmit its failure
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/neutron.contractmanager.MsgResubmitFailure")]
+pub struct MsgResubmitFailure {
+    /// sender is the contract which failure to acknowledge is resubmitted.
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    /// failure_id is id of failure to resubmit
+    ///
+    /// NOTE: All parameters must be supplied.
+    #[prost(uint64, tag = "2")]
+    #[serde(alias = "failureID")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub failure_id: u64,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/neutron.contractmanager.MsgResubmitFailureResponse")]
+pub struct MsgResubmitFailureResponse {}
 pub struct ContractmanagerQuerier<'a, Q: cosmwasm_std::CustomQuery> {
     querier: &'a cosmwasm_std::QuerierWrapper<'a, Q>,
 }

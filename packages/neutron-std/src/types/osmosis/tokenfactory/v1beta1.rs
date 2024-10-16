@@ -255,6 +255,46 @@ pub struct QueryBeforeSendHookAddressResponse {
     #[prost(string, tag = "1")]
     pub contract_addr: ::prost::alloc::string::String,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/osmosis.tokenfactory.v1beta1.QueryFullDenomRequest")]
+#[proto_query(
+    path = "/osmosis.tokenfactory.v1beta1.Query/FullDenom",
+    response_type = QueryFullDenomResponse
+)]
+pub struct QueryFullDenomRequest {
+    #[prost(string, tag = "1")]
+    pub creator: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub subdenom: ::prost::alloc::string::String,
+}
+/// QueryBeforeSendHookAddressResponse defines the response structure for the
+/// DenomBeforeSendHook gRPC query.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/osmosis.tokenfactory.v1beta1.QueryFullDenomResponse")]
+pub struct QueryFullDenomResponse {
+    #[prost(string, tag = "1")]
+    pub full_denom: ::prost::alloc::string::String,
+}
 /// MsgCreateDenom defines the message structure for the CreateDenom gRPC service
 /// method. It allows an account to create a new denom. It requires a sender
 /// address and a sub denomination. The (sender_address, sub_denomination) tuple
@@ -586,5 +626,12 @@ impl<'a, Q: cosmwasm_std::CustomQuery> TokenfactoryQuerier<'a, Q> {
         subdenom: ::prost::alloc::string::String,
     ) -> Result<QueryBeforeSendHookAddressResponse, cosmwasm_std::StdError> {
         QueryBeforeSendHookAddressRequest { creator, subdenom }.query(self.querier)
+    }
+    pub fn full_denom(
+        &self,
+        creator: ::prost::alloc::string::String,
+        subdenom: ::prost::alloc::string::String,
+    ) -> Result<QueryFullDenomResponse, cosmwasm_std::StdError> {
+        QueryFullDenomRequest { creator, subdenom }.query(self.querier)
     }
 }
