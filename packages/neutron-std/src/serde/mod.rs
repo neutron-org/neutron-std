@@ -1,15 +1,63 @@
 pub mod as_str {
-    use serde::{de, Deserialize, Deserializer, Serializer};
-    use std::{fmt::Display, str::FromStr};
+    use serde::{
+        de::{
+            self,
+            value::{I64Deserializer, U64Deserializer},
+        },
+        Deserialize, Deserializer, Serializer,
+    };
+    use std::{
+        fmt::{Display, Formatter},
+        marker::PhantomData,
+        str::FromStr,
+    };
+
+    struct StringOrNumberVisitor<T> {
+        p: PhantomData<T>,
+    }
+
+    impl<'de, T> de::Visitor<'de> for StringOrNumberVisitor<T>
+    where
+        T: Deserialize<'de>,
+        T::Err: Display,
+        T: FromStr,
+    {
+        type Value = T;
+
+        fn expecting(&self, formatter: &mut Formatter) -> std::fmt::Result {
+            formatter.write_str("a string or a number")
+        }
+
+        fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            T::deserialize(U64Deserializer::new(value))
+        }
+
+        fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            T::deserialize(I64Deserializer::new(value))
+        }
+
+        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            value.parse::<T>().map_err(de::Error::custom)
+        }
+    }
 
     pub fn deserialize<'de, T, D>(deserializer: D) -> Result<T, D::Error>
     where
         T: FromStr,
         T::Err: Display,
+        T: Deserialize<'de>,
         D: Deserializer<'de>,
     {
-        let s = String::deserialize(deserializer)?;
-        T::from_str(&s).map_err(de::Error::custom)
+        deserializer.deserialize_any(StringOrNumberVisitor { p: PhantomData })
     }
 
     pub fn serialize<S, T>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
