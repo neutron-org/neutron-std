@@ -269,8 +269,6 @@ pub struct MsgResubmitFailure {
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
     /// failure_id is id of failure to resubmit
-    ///
-    /// NOTE: All parameters must be supplied.
     #[prost(uint64, tag = "2")]
     #[serde(alias = "failureID")]
     #[serde(

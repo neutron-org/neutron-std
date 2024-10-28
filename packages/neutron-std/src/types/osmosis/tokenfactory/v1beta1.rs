@@ -215,6 +215,8 @@ pub struct QueryDenomsFromCreatorResponse {
     #[prost(string, repeated, tag = "1")]
     pub denoms: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
+/// QueryBeforeSendHookAddressRequest defines the request structure for the
+/// BeforeSendHookAddress gRPC query.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -238,7 +240,7 @@ pub struct QueryBeforeSendHookAddressRequest {
     pub subdenom: ::prost::alloc::string::String,
 }
 /// QueryBeforeSendHookAddressResponse defines the response structure for the
-/// DenomBeforeSendHook gRPC query.
+/// BeforeSendHookAddress gRPC query.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -255,6 +257,8 @@ pub struct QueryBeforeSendHookAddressResponse {
     #[prost(string, tag = "1")]
     pub contract_addr: ::prost::alloc::string::String,
 }
+/// QueryFullDenomRequest defines the request structure for the
+/// FullDenom gRPC query.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -277,8 +281,8 @@ pub struct QueryFullDenomRequest {
     #[prost(string, tag = "2")]
     pub subdenom: ::prost::alloc::string::String,
 }
-/// QueryBeforeSendHookAddressResponse defines the response structure for the
-/// DenomBeforeSendHook gRPC query.
+/// QueryFullDenomResponse defines the response structure for the
+/// FullDenom gRPC query.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
