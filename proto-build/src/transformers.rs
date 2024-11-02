@@ -227,8 +227,8 @@ pub fn allow_serde_option_int_as_str(s: ItemStruct) -> ItemStruct {
             if int_types.contains(&field.ty) {
                 let from_str: syn::Attribute = parse_quote! {
                     #[serde(
-                        serialize_with = "crate::serde::option_int_as_str::serialize",
-                        deserialize_with = "crate::serde::option_int_as_str::deserialize"
+                        serialize_with = "crate::serde::option_as_str::serialize",
+                        deserialize_with = "crate::serde::option_as_str::deserialize"
                     )]
                 };
                 field.attrs.append(&mut vec![from_str]);
@@ -388,7 +388,7 @@ fn is_field_gogoproto_nullable(
                     .unknown_fields()
                     .get(GOGOPROTO_NULLABLE_EXTENSION_FIELD_NUMBER);
 
-                let is_gogoproto_nullabe = if let Some(v) = sf {
+                let is_gogoproto_nullable = if let Some(v) = sf {
                     match v {
                         // Varint(1) => gogoproto.nullable = true
                         // Varint(0) => gogoproto.nullable = false
@@ -397,13 +397,13 @@ fn is_field_gogoproto_nullable(
                         // let's mark it as unimplemented for now.
                         // if we really encounter this, we'll come up with some solution
                         protobuf::UnknownValueRef::Varint(u) => u == 1,
-                        _ => unimplemented!(),
+                        _ => panic!("Unexpected values of special field: {:?}", v),
                     }
                 } else {
                     false
                 };
 
-                return is_gogoproto_nullabe;
+                return is_gogoproto_nullable;
             }
         }
     }

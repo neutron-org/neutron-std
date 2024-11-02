@@ -1,5 +1,5 @@
-// Helps (de)serialize ints as str
-// Cause some structs in Cosmos SDK returns ints as strs
+// Helps (de)serialize any type that implements FromStr trait as str
+// For example some structs in Cosmos SDK returns ints as strs and this mod helps deal with that
 pub mod as_str {
     use serde::{de, Deserialize, Deserializer, Serializer};
     use std::{fmt::Display, str::FromStr};
@@ -23,9 +23,9 @@ pub mod as_str {
     }
 }
 
-// Helps (de)serialize Option<int|uint|...|usize> as Option<str>
-// Cause some structs in Cosmos SDK returns ints as strs
-pub mod option_int_as_str {
+// Helps (de)serialize any Option<T> that FromStr trait as str
+// For example some structs in Cosmos SDK returns ints as strs and this mod helps deal with that
+pub mod option_as_str {
     use serde::{de, Deserialize, Deserializer, Serializer};
     use std::{fmt::Display, str::FromStr};
 
