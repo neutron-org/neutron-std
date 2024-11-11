@@ -14,7 +14,8 @@ use neutron_std_derive::CosmwasmExt;
 #[proto_message(type_url = "/neutron.ibcratelimit.v1beta1.Params")]
 pub struct Params {
     #[prost(string, tag = "1")]
-    pub contract_address: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub contract_address: ::core::option::Option<::prost::alloc::string::String>,
 }
 /// GenesisState defines the ibc-rate-limit module's genesis state.
 #[allow(clippy::derive_partial_eq_without_eq)]

@@ -1,6 +1,5 @@
 use heck::ToUpperCamelCase;
 use log::debug;
-use prost_types::FileDescriptorSet;
 
 use regex::Regex;
 use std::ffi::OsStr;
@@ -14,9 +13,13 @@ use crate::transformers;
 
 /// Protos belonging to these Protobuf packages will be excluded
 /// (i.e. because they are sourced from `tendermint-proto`)
-const EXCLUDED_PROTO_PACKAGES: &[&str] = &["cosmos_proto", "gogoproto", "google"];
+const EXCLUDED_PROTO_PACKAGES: &[&str] = &["cosmos_proto", "google"];
 
-pub fn copy_and_transform_all(from_dir: &Path, to_dir: &Path, descriptor: &FileDescriptorSet) {
+pub fn copy_and_transform_all(
+    from_dir: &Path,
+    to_dir: &Path,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
+) {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let to_dir = root.join(to_dir);
     debug!("Copying generated files into '{}'...", to_dir.display());
@@ -56,7 +59,7 @@ pub fn copy_and_transform_all(from_dir: &Path, to_dir: &Path, descriptor: &FileD
 fn copy_and_transform(
     src: &Path,
     dest: impl AsRef<Path>,
-    descriptor: &FileDescriptorSet,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
 ) -> io::Result<()> {
     debug!("copy_and_transform: {:?} -> {:?}", src, dest.as_ref());
     // Skip proto files belonging to `EXCLUDED_PROTO_PACKAGES`
@@ -106,7 +109,7 @@ fn transform_module(
     items: Vec<Item>,
     src: &Path,
     ancestors: &[String],
-    descriptor: &FileDescriptorSet,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
     nested_mod: bool,
 ) -> Vec<Item> {
     let mut items = transform_items(items, src, ancestors, descriptor);
@@ -132,7 +135,7 @@ fn prepend(items: Vec<Item>) -> Vec<Item> {
 fn append(
     items: Vec<Item>,
     src: &Path,
-    descriptor: &FileDescriptorSet,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
     nested_mod: bool,
 ) -> Vec<Item> {
     transformers::append_querier(items, src, nested_mod, descriptor)
@@ -142,7 +145,7 @@ fn transform_items(
     items: Vec<Item>,
     src: &Path,
     ancestors: &[String],
-    descriptor: &FileDescriptorSet,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
 ) -> Vec<Item> {
     items
         .into_iter()
@@ -151,12 +154,14 @@ fn transform_items(
                 let s = transformers::add_derive_eq_struct(&s);
                 let s = transformers::append_attrs_struct(src, &s, descriptor);
                 let s = transformers::serde_alias_id_with_uppercased(s);
+                let s = transformers::respect_gogoproto_nullable(s, descriptor);
                 // A hack to make Pagination::next_key optional.
                 // Remove if [this PR](https://github.com/cosmos/cosmos-sdk/pull/20246) is merged and released
                 let s = transformers::make_next_key_optional(s);
                 let s = transformers::allow_serde_option_vec_u8_as_base64_encoded_string(s);
                 let s = transformers::allow_serde_vec_u8_as_base64_encoded_string(s);
                 let s = transformers::allow_serde_int_as_str(s);
+                let s = transformers::allow_serde_option_int_as_str(s);
 
                 transformers::allow_serde_vec_int_as_vec_str(s)
             }),
@@ -179,7 +184,7 @@ fn transform_nested_mod(
     i: Item,
     src: &Path,
     ancestors: &[String],
-    descriptor: &FileDescriptorSet,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
 ) -> Item {
     match i.clone() {
         Item::Mod(m) => {

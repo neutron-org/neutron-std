@@ -60,7 +60,8 @@ pub struct GenesisDenom {
     #[prost(message, optional, tag = "2")]
     pub authority_metadata: ::core::option::Option<DenomAuthorityMetadata>,
     #[prost(string, tag = "3")]
-    pub hook_contract_address: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub hook_contract_address: ::core::option::Option<::prost::alloc::string::String>,
 }
 /// Params defines the parameters for the tokenfactory module.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -87,11 +88,12 @@ pub struct Params {
     ///
     /// See: <https://github.com/CosmWasm/token-factory/issues/11>
     #[prost(uint64, tag = "2")]
+    #[prost(optional)]
     #[serde(
-        serialize_with = "crate::serde::as_str::serialize",
-        deserialize_with = "crate::serde::as_str::deserialize"
+        serialize_with = "crate::serde::option_as_str::serialize",
+        deserialize_with = "crate::serde::option_as_str::deserialize"
     )]
-    pub denom_creation_gas_consume: u64,
+    pub denom_creation_gas_consume: ::core::option::Option<u64>,
     /// FeeCollectorAddress is the address where fees collected from denom creation
     /// are sent to
     #[prost(string, tag = "3")]

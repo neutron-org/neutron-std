@@ -3,9 +3,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::{env, fs, io};
 
+extern crate protobuf;
+extern crate serde_protobuf;
+
 use log::{debug, info};
-use prost::Message;
-use prost_types::FileDescriptorSet;
 use walkdir::WalkDir;
 
 use crate::{mod_gen, transform};
@@ -205,7 +206,7 @@ impl CodeGenerator {
         );
     }
 
-    pub fn file_descriptor_set(&self) -> FileDescriptorSet {
+    pub fn file_descriptor_set(&self) -> protobuf::descriptor::FileDescriptorSet {
         // list all files in self.tmp_namespaced_dir()
         let files = fs::read_dir(self.tmp_namespaced_dir())
             .unwrap()
@@ -226,10 +227,14 @@ impl CodeGenerator {
             .collect::<Vec<_>>();
 
         // read all files and merge them into one FileDescriptorSet
-        let mut file_descriptor_set = FileDescriptorSet { file: vec![] };
+        let mut file_descriptor_set = protobuf::descriptor::FileDescriptorSet {
+            file: vec![],
+            special_fields: Default::default(),
+        };
         for descriptor_file in descriptor_files {
             let descriptor_bytes = &fs::read(descriptor_file).unwrap()[..];
-            let mut file_descriptor_set_tmp = FileDescriptorSet::decode(descriptor_bytes).unwrap();
+            let mut file_descriptor_set_tmp: protobuf::descriptor::FileDescriptorSet =
+                protobuf::Message::parse_from_bytes(descriptor_bytes).unwrap();
             file_descriptor_set
                 .file
                 .append(&mut file_descriptor_set_tmp.file);

@@ -1,3 +1,5 @@
+// Helps (de)serialize any type that implements FromStr trait as str
+// For example some structs in Cosmos SDK returns ints as strs and this mod helps deal with that
 pub mod as_str {
     use serde::{de, Deserialize, Deserializer, Serializer};
     use std::{fmt::Display, str::FromStr};
@@ -18,6 +20,37 @@ pub mod as_str {
         T: Display,
     {
         serializer.serialize_str(&value.to_string())
+    }
+}
+
+// Helps (de)serialize any Option<T> that FromStr trait as str
+// For example some structs in Cosmos SDK returns ints as strs and this mod helps deal with that
+pub mod option_as_str {
+    use serde::{de, Deserialize, Deserializer, Serializer};
+    use std::{fmt::Display, str::FromStr};
+
+    pub fn deserialize<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
+    where
+        T: FromStr,
+        T::Err: Display,
+        D: Deserializer<'de>,
+    {
+        let encoded_string: Option<String> = Option::deserialize(deserializer)?;
+        match encoded_string {
+            Some(s) => T::from_str(&s).map(Some).map_err(de::Error::custom),
+            None => Ok(None),
+        }
+    }
+
+    pub fn serialize<S, T>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+        T: Display,
+    {
+        match value {
+            None => serializer.serialize_none(),
+            Some(v) => serializer.serialize_str(&v.to_string()),
+        }
     }
 }
 

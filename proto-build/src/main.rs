@@ -36,11 +36,11 @@ const COMETBFT_REV: &str = "v0.38.11";
 const IBC_GO_REV: &str = "v8.5.1";
 
 /// The ics23 commit or tag to be cloned and used to build the proto files
-const ICS23_REV: &str = "go/v0.10.0";
+const ICS23_REV: &str = "go/v0.11.0";
 
 const FEEMARKET_REV: &str = "v1.1.1";
 
-const SLINKY_REV: &str = "v1.0.3";
+const SLINKY_REV: &str = "v1.0.12";
 
 const ADMIN_MODULE_REV: &str = "v2.0.2";
 

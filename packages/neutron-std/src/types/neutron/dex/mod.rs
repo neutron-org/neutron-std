@@ -163,7 +163,8 @@ pub struct DepositRecord {
     )]
     pub fee: u64,
     #[prost(string, tag = "7")]
-    pub total_shares: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub total_shares: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(message, optional, tag = "8")]
     pub pool: ::core::option::Option<Pool>,
 }
@@ -464,14 +465,17 @@ pub struct MsgPlaceLimitOrder {
     #[prost(message, optional, tag = "9")]
     pub expiration_time: ::core::option::Option<crate::shim::Timestamp>,
     #[prost(string, tag = "10")]
-    pub max_amount_out: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub max_amount_out: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, tag = "11")]
-    pub limit_sell_price: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub limit_sell_price: ::core::option::Option<::prost::alloc::string::String>,
     /// min_average_sell_price is an optional parameter that sets a required minimum average price for the entire trade.
     /// if the min_average_sell_price is not met the trade will fail.
     /// If min_average_sell_price is omitted limit_sell_price will be used instead
     #[prost(string, tag = "12")]
-    pub min_average_sell_price: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub min_average_sell_price: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -953,7 +957,8 @@ pub struct QueryGetLimitOrderTrancheUserResponse {
     #[prost(message, optional, tag = "1")]
     pub limit_order_tranche_user: ::core::option::Option<LimitOrderTrancheUser>,
     #[prost(string, tag = "2")]
-    pub withdrawable_shares: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub withdrawable_shares: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
