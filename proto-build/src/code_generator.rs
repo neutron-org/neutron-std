@@ -3,9 +3,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::{env, fs, io};
 
+extern crate protobuf;
+extern crate serde_protobuf;
+
 use log::{debug, info};
-use prost::Message;
-use prost_types::FileDescriptorSet;
 use walkdir::WalkDir;
 
 use crate::{mod_gen, transform};
@@ -125,21 +126,22 @@ impl CodeGenerator {
         // Compile proto files for each file in `protos` variable
         // `buf generate —template {<buf_gen_template} <proto_file>`
         for project in all_related_projects {
-            let buf_root = if project.name == "cosmos" || project.name == "ics23" {
-                self.root.join(&project.project_dir).join("proto")
-            } else {
-                WalkDir::new(&self.root.join(&project.project_dir))
-                    .into_iter()
-                    .filter_map(|e| e.ok())
-                    .find(|e| {
-                        e.file_name()
-                            .to_str()
-                            .map(|s| s == "buf.yaml" || s == "buf.yml")
-                            .unwrap_or(false)
-                    })
-                    .map(|e| e.path().parent().unwrap().to_path_buf())
-                    .unwrap()
-            };
+            let buf_root =
+                if project.name == "cosmos" || project.name == "ics23" || project.name == "admin" {
+                    self.root.join(&project.project_dir).join("proto")
+                } else {
+                    WalkDir::new(&self.root.join(&project.project_dir))
+                        .into_iter()
+                        .filter_map(|e| e.ok())
+                        .find(|e| {
+                            e.file_name()
+                                .to_str()
+                                .map(|s| s == "buf.yaml" || s == "buf.yml")
+                                .unwrap_or(false)
+                        })
+                        .map(|e| e.path().parent().unwrap().to_path_buf())
+                        .unwrap()
+                };
 
             debug!("buf_root for project {:?}: {:?}", project.name, buf_root);
 
@@ -204,7 +206,7 @@ impl CodeGenerator {
         );
     }
 
-    pub fn file_descriptor_set(&self) -> FileDescriptorSet {
+    pub fn file_descriptor_set(&self) -> protobuf::descriptor::FileDescriptorSet {
         // list all files in self.tmp_namespaced_dir()
         let files = fs::read_dir(self.tmp_namespaced_dir())
             .unwrap()
@@ -225,10 +227,14 @@ impl CodeGenerator {
             .collect::<Vec<_>>();
 
         // read all files and merge them into one FileDescriptorSet
-        let mut file_descriptor_set = FileDescriptorSet { file: vec![] };
+        let mut file_descriptor_set = protobuf::descriptor::FileDescriptorSet {
+            file: vec![],
+            special_fields: Default::default(),
+        };
         for descriptor_file in descriptor_files {
             let descriptor_bytes = &fs::read(descriptor_file).unwrap()[..];
-            let mut file_descriptor_set_tmp = FileDescriptorSet::decode(descriptor_bytes).unwrap();
+            let mut file_descriptor_set_tmp: protobuf::descriptor::FileDescriptorSet =
+                protobuf::Message::parse_from_bytes(descriptor_bytes).unwrap();
             file_descriptor_set
                 .file
                 .append(&mut file_descriptor_set_tmp.file);

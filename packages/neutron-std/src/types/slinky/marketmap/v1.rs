@@ -345,6 +345,51 @@ pub struct LastUpdatedResponse {
     )]
     pub last_updated: u64,
 }
+/// MsgUpsertMarkets defines a message carrying a payload for performing market
+/// upserts (update or create if does not exist) in the x/marketmap module.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.marketmap.v1.MsgUpsertMarkets")]
+pub struct MsgUpsertMarkets {
+    /// Authority is the signer of this transaction.  This authority must be
+    /// authorized by the module to execute the message.
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// CreateMarkets is the list of all markets to be created for the given
+    /// transaction.
+    #[prost(message, repeated, tag = "2")]
+    pub markets: ::prost::alloc::vec::Vec<Market>,
+}
+/// MsgUpsertMarketsResponse is the response from the UpsertMarkets API in the
+/// x/marketmap module.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.marketmap.v1.MsgUpsertMarketsResponse")]
+pub struct MsgUpsertMarketsResponse {
+    /// UpdatedMarkets is a map between the ticker and whether the market was
+    /// updated.
+    /// Deprecated: This field will be empty in all responses.
+    #[prost(map = "string, bool", tag = "1")]
+    pub market_updates: ::std::collections::HashMap<::prost::alloc::string::String, bool>,
+}
 /// MsgCreateMarkets defines a message carrying a payload for creating markets in
 /// the x/marketmap module.
 #[allow(clippy::derive_partial_eq_without_eq)]

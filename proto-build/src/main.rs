@@ -19,12 +19,13 @@ const ICS23_REPO: &str = "https://github.com/cosmos/ics23.git";
 const FEEMARKET_REPO: &str = "https://github.com/skip-mev/feemarket.git";
 const SLINKY_REPO: &str = "https://github.com/skip-mev/slinky.git";
 const INTERCHAIN_SECURITY_REPO: &str = "https://github.com/cosmos/interchain-security.git";
+const ADMIN_MODULE_REPO: &str = "https://github.com/neutron-org/admin-module.git";
 
 /// The Cosmos SDK commit or tag to be cloned and used to build the proto files
 const COSMOS_SDK_REV: &str = "v0.50.9-neutron";
 
 /// The Neutron commit or tag to be cloned and used to build the proto files
-const NEUTRON_REV: &str = "main";
+const NEUTRON_REV: &str = "v5.0.0";
 
 /// The wasmd commit or tag to be cloned and used to build the proto files
 const WASMD_REV: &str = "v0.53.0-neutron";
@@ -36,11 +37,13 @@ const COMETBFT_REV: &str = "v0.38.11";
 const IBC_GO_REV: &str = "v8.5.1";
 
 /// The ics23 commit or tag to be cloned and used to build the proto files
-const ICS23_REV: &str = "go/v0.10.0";
+const ICS23_REV: &str = "go/v0.11.0";
 
 const FEEMARKET_REV: &str = "v1.1.1";
 
-const SLINKY_REV: &str = "v1.0.3";
+const SLINKY_REV: &str = "v1.0.12";
+
+const ADMIN_MODULE_REV: &str = "v2.0.2";
 
 const INTERCHAIN_SECURITY_REV: &str = "v5.1.1";
 
@@ -65,6 +68,8 @@ const FEEMARKET_DIR: &str = "../dependencies/feemarket/";
 const SLINKY_DIR: &str = "../dependencies/slinky/";
 /// Directory where the interchain-security repo is located
 const INTERCHAIN_SECURITY_DIR: &str = "../dependencies/interchain-security/";
+/// Directory where the admin-module repo is located
+const ADMIN_MODULE_DIR: &str = "../dependencies/admin-module/";
 
 /// A temporary directory for repos storing
 const TMP_REPOS_DIR: &str = "./dependencies/";
@@ -92,6 +97,7 @@ pub fn generate() {
         INTERCHAIN_SECURITY_DIR,
         INTERCHAIN_SECURITY_REV,
     );
+    git::clone_repo(ADMIN_MODULE_REPO, ADMIN_MODULE_DIR, ADMIN_MODULE_REV);
 
     let tmp_build_dir: PathBuf = TMP_BUILD_DIR.parse().unwrap();
     let out_dir: PathBuf = OUT_DIR.parse().unwrap();
@@ -159,6 +165,13 @@ pub fn generate() {
         exclude_mods: vec![],
     };
 
+    let admin_project = CosmosProject {
+        name: "admin".to_string(),
+        version: ADMIN_MODULE_REV.to_string(),
+        project_dir: ADMIN_MODULE_DIR.to_string(),
+        exclude_mods: vec![],
+    };
+
     let neutron_code_generator = CodeGenerator::new(
         out_dir,
         tmp_build_dir,
@@ -172,6 +185,7 @@ pub fn generate() {
             feemarket_project,
             slinky_project,
             interchain_security_project,
+            admin_project,
         ],
     );
 

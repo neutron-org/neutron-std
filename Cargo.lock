@@ -1084,6 +1084,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8adc4bb1803a324070e64a98ae98f38934d91957a99cfb3a43dcbc01bc56439"
 
 [[package]]
+name = "linked-hash-map"
+version = "0.5.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0717cef1bc8b636c6e1c1bbdefc09e6322da8a9321966e8928ef80d20f7f770f"
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1142,7 +1148,7 @@ checksum = "defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03"
 
 [[package]]
 name = "neutron-std"
-version = "4.2.2-rc"
+version = "5.0.0"
 dependencies = [
  "base64 0.21.7",
  "bech32 0.9.1",
@@ -1154,7 +1160,7 @@ dependencies = [
  "neutron-std-derive",
  "prost",
  "prost-types",
- "protobuf",
+ "protobuf 3.3.0",
  "schemars",
  "serde",
  "serde-cw-value",
@@ -1435,13 +1441,21 @@ dependencies = [
  "prost",
  "prost-build",
  "prost-types",
+ "protobuf 3.3.0",
  "quote",
  "regex",
+ "serde-protobuf",
  "syn 1.0.109",
  "tonic",
  "tonic-build",
  "walkdir",
 ]
+
+[[package]]
+name = "protobuf"
+version = "2.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "106dd99e98437432fed6519dedecfade6a06a73bb7b2a1e019fdd2bee5778d94"
 
 [[package]]
 name = "protobuf"
@@ -1684,6 +1698,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f05da0d153dd4595bdffd5099dc0e9ce425b205ee648eb93437ff7302af8c9a5"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "serde-protobuf"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "386e6493f9a732832e6b595ac2757a3c8c9285f4ab0c27313b7696b1712c32e4"
+dependencies = [
+ "linked-hash-map",
+ "log",
+ "protobuf 2.28.0",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]

@@ -60,7 +60,8 @@ pub struct GenesisDenom {
     #[prost(message, optional, tag = "2")]
     pub authority_metadata: ::core::option::Option<DenomAuthorityMetadata>,
     #[prost(string, tag = "3")]
-    pub hook_contract_address: ::prost::alloc::string::String,
+    #[prost(optional)]
+    pub hook_contract_address: ::core::option::Option<::prost::alloc::string::String>,
 }
 /// Params defines the parameters for the tokenfactory module.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -87,11 +88,12 @@ pub struct Params {
     ///
     /// See: <https://github.com/CosmWasm/token-factory/issues/11>
     #[prost(uint64, tag = "2")]
+    #[prost(optional)]
     #[serde(
-        serialize_with = "crate::serde::as_str::serialize",
-        deserialize_with = "crate::serde::as_str::deserialize"
+        serialize_with = "crate::serde::option_as_str::serialize",
+        deserialize_with = "crate::serde::option_as_str::deserialize"
     )]
-    pub denom_creation_gas_consume: u64,
+    pub denom_creation_gas_consume: ::core::option::Option<u64>,
     /// FeeCollectorAddress is the address where fees collected from denom creation
     /// are sent to
     #[prost(string, tag = "3")]
@@ -215,6 +217,8 @@ pub struct QueryDenomsFromCreatorResponse {
     #[prost(string, repeated, tag = "1")]
     pub denoms: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
+/// QueryBeforeSendHookAddressRequest defines the request structure for the
+/// BeforeSendHookAddress gRPC query.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -238,7 +242,7 @@ pub struct QueryBeforeSendHookAddressRequest {
     pub subdenom: ::prost::alloc::string::String,
 }
 /// QueryBeforeSendHookAddressResponse defines the response structure for the
-/// DenomBeforeSendHook gRPC query.
+/// BeforeSendHookAddress gRPC query.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -254,6 +258,48 @@ pub struct QueryBeforeSendHookAddressRequest {
 pub struct QueryBeforeSendHookAddressResponse {
     #[prost(string, tag = "1")]
     pub contract_addr: ::prost::alloc::string::String,
+}
+/// QueryFullDenomRequest defines the request structure for the
+/// FullDenom gRPC query.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/osmosis.tokenfactory.v1beta1.QueryFullDenomRequest")]
+#[proto_query(
+    path = "/osmosis.tokenfactory.v1beta1.Query/FullDenom",
+    response_type = QueryFullDenomResponse
+)]
+pub struct QueryFullDenomRequest {
+    #[prost(string, tag = "1")]
+    pub creator: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub subdenom: ::prost::alloc::string::String,
+}
+/// QueryFullDenomResponse defines the response structure for the
+/// FullDenom gRPC query.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/osmosis.tokenfactory.v1beta1.QueryFullDenomResponse")]
+pub struct QueryFullDenomResponse {
+    #[prost(string, tag = "1")]
+    pub full_denom: ::prost::alloc::string::String,
 }
 /// MsgCreateDenom defines the message structure for the CreateDenom gRPC service
 /// method. It allows an account to create a new denom. It requires a sender
@@ -586,5 +632,12 @@ impl<'a, Q: cosmwasm_std::CustomQuery> TokenfactoryQuerier<'a, Q> {
         subdenom: ::prost::alloc::string::String,
     ) -> Result<QueryBeforeSendHookAddressResponse, cosmwasm_std::StdError> {
         QueryBeforeSendHookAddressRequest { creator, subdenom }.query(self.querier)
+    }
+    pub fn full_denom(
+        &self,
+        creator: ::prost::alloc::string::String,
+        subdenom: ::prost::alloc::string::String,
+    ) -> Result<QueryFullDenomResponse, cosmwasm_std::StdError> {
+        QueryFullDenomRequest { creator, subdenom }.query(self.querier)
     }
 }
