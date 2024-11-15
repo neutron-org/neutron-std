@@ -12,3 +12,4 @@ pub mod interchaintxs;
 pub mod revenue;
 pub mod state_verifier;
 pub mod transfer;
+pub mod util;
