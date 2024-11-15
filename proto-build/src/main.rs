@@ -24,7 +24,7 @@ const ADMIN_MODULE_REPO: &str = "https://github.com/neutron-org/admin-module.git
 const COSMOS_SDK_REV: &str = "v0.50.9-neutron";
 
 /// The Neutron commit or tag to be cloned and used to build the proto files
-const NEUTRON_REV: &str = "v5.0.0";
+const NEUTRON_REV: &str = "v5.0.1";
 
 /// The wasmd commit or tag to be cloned and used to build the proto files
 const WASMD_REV: &str = "v0.53.0-neutron";
