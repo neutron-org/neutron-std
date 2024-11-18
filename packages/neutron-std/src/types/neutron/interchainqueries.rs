@@ -451,8 +451,8 @@ pub struct MsgSubmitQueryResultResponse {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/neutron.interchainqueries.MsgRemoveInterchainQuery")]
-pub struct MsgRemoveInterchainQuery {
+#[proto_message(type_url = "/neutron.interchainqueries.MsgRemoveInterchainQueryRequest")]
+pub struct MsgRemoveInterchainQueryRequest {
     /// The ID of the query to remove.
     #[prost(uint64, tag = "1")]
     #[serde(alias = "queryID")]
@@ -491,8 +491,8 @@ pub struct MsgRemoveInterchainQueryResponse {}
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/neutron.interchainqueries.MsgUpdateInterchainQuery")]
-pub struct MsgUpdateInterchainQuery {
+#[proto_message(type_url = "/neutron.interchainqueries.MsgUpdateInterchainQueryRequest")]
+pub struct MsgUpdateInterchainQueryRequest {
     /// The ID of the query to update.
     #[prost(uint64, tag = "1")]
     #[serde(alias = "queryID")]
@@ -722,12 +722,12 @@ pub struct QueryRegisteredQueryResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/neutron.interchainqueries.QueryQueryResultRequest")]
+#[proto_message(type_url = "/neutron.interchainqueries.QueryRegisteredQueryResultRequest")]
 #[proto_query(
     path = "/neutron.interchainqueries.Query/QueryResult",
-    response_type = QueryQueryResultResponse
+    response_type = QueryRegisteredQueryResultResponse
 )]
-pub struct QueryQueryResultRequest {
+pub struct QueryRegisteredQueryResultRequest {
     /// ID of an Interchain Query.
     #[prost(uint64, tag = "1")]
     #[serde(alias = "queryID")]
@@ -749,11 +749,44 @@ pub struct QueryQueryResultRequest {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/neutron.interchainqueries.QueryQueryResultResponse")]
-pub struct QueryQueryResultResponse {
+#[proto_message(type_url = "/neutron.interchainqueries.QueryRegisteredQueryResultResponse")]
+pub struct QueryRegisteredQueryResultResponse {
     /// The last successfully submitted result of an Interchain Query.
     #[prost(message, optional, tag = "1")]
     pub result: ::core::option::Option<QueryResult>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/neutron.interchainqueries.Transaction")]
+pub struct Transaction {
+    #[prost(uint64, tag = "1")]
+    #[serde(alias = "ID")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub id: u64,
+    #[prost(uint64, tag = "2")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub height: u64,
+    #[prost(bytes = "vec", tag = "3")]
+    #[serde(
+        serialize_with = "crate::serde::as_base64_encoded_string::serialize",
+        deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
+    )]
+    pub data: ::prost::alloc::vec::Vec<u8>,
 }
 /// Request type for the Query/LastRemoteHeight RPC method.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -767,12 +800,12 @@ pub struct QueryQueryResultResponse {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/neutron.interchainqueries.QueryLastRemoteHeightRequest")]
+#[proto_message(type_url = "/neutron.interchainqueries.QueryLastRemoteHeight")]
 #[proto_query(
     path = "/neutron.interchainqueries.Query/LastRemoteHeight",
     response_type = QueryLastRemoteHeightResponse
 )]
-pub struct QueryLastRemoteHeightRequest {
+pub struct QueryLastRemoteHeight {
     /// Connection ID of an IBC connection to a remote chain. Determines the IBC client used in query
     /// handling.
     #[prost(string, tag = "1")]
@@ -840,13 +873,13 @@ impl<'a, Q: cosmwasm_std::CustomQuery> InterchainqueriesQuerier<'a, Q> {
     pub fn query_result(
         &self,
         query_id: u64,
-    ) -> Result<QueryQueryResultResponse, cosmwasm_std::StdError> {
-        QueryQueryResultRequest { query_id }.query(self.querier)
+    ) -> Result<QueryRegisteredQueryResultResponse, cosmwasm_std::StdError> {
+        QueryRegisteredQueryResultRequest { query_id }.query(self.querier)
     }
     pub fn last_remote_height(
         &self,
         connection_id: ::prost::alloc::string::String,
     ) -> Result<QueryLastRemoteHeightResponse, cosmwasm_std::StdError> {
-        QueryLastRemoteHeightRequest { connection_id }.query(self.querier)
+        QueryLastRemoteHeight { connection_id }.query(self.querier)
     }
 }
