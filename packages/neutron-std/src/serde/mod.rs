@@ -14,7 +14,19 @@ use std::{
 struct StringOrNumberVisitor<T> {
     p: PhantomData<T>,
 }
-
+// The Visitor helps deserialize a number, both from its numerical JSON representation and from a string. 
+// For example, for the struct: 
+// ```rust
+// struct Foo {
+//     pub bar: i32;
+// }
+// ```
+// Both JSON representations `'{"foo":"12"}'` and `'{"foo":12}'` will give the same result upon deserialization:
+// ```json
+// {
+//     "foo": 12
+// }
+/// ```
 impl<'de, T> de::Visitor<'de> for StringOrNumberVisitor<T>
 where
     T: Deserialize<'de>,
@@ -197,6 +209,13 @@ pub mod as_option_base64_encoded_string {
     }
 }
 
+
+// NumberOrString is a helper enum that helps us determine which 
+// JSON numeric representation we are working with. If it's a string, 
+// we will get the value `NumberOrString::String("-11")`. 
+// If we are dealing with a numeric representation, 
+// we will get `NumberOrString::Number(-11i64)`. 
+// Then, using pattern matching, we can select the appropriate algorithm to work with the data.
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 enum NumberOrString<T> {
