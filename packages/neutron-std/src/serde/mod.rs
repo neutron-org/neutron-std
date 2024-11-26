@@ -21,12 +21,7 @@ struct StringOrNumberVisitor<T> {
 //     pub bar: i32;
 // }
 // ```
-// Both JSON representations `'{"foo":"12"}'` and `'{"foo":12}'` will give the same result upon deserialization:
-// ```json
-// {
-//     "foo": 12
-// }
-/// ```
+// Both JSON representations `'{"bar":"12"}'` and `'{"bar":12}'` will give the same result upon deserialization:
 impl<'de, T> de::Visitor<'de> for StringOrNumberVisitor<T>
 where
     T: Deserialize<'de>,
