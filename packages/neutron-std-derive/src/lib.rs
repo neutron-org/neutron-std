@@ -33,12 +33,14 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
     // provided buffer had insufficient capacity. Message encoding is otherwise
     // infallible.
 
-    let (query_request_conversion, cosmwasm_query) = if get_attr("proto_query", &input.attrs)
-        .is_some()
+    let (query_request_conversion, cosmwasm_query, path_token) = if get_attr(
+        "proto_query",
+        &input.attrs,
+    )
+    .is_some()
     {
         let path = get_query_attrs(&input.attrs, match_kv_attr!("path", Literal));
         let res = get_query_attrs(&input.attrs, match_kv_attr!("response_type", Ident));
-
         let query_request_conversion = quote! {
             impl <Q: cosmwasm_std::CustomQuery> From<#ident> for cosmwasm_std::QueryRequest<Q> {
                 fn from(msg: #ident) -> Self {
@@ -70,14 +72,21 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
             }
         };
 
-        (query_request_conversion, cosmwasm_query)
+        let path_token = quote! {
+            pub const PATH: &'static str = #path;
+        };
+
+        (query_request_conversion, cosmwasm_query, path_token)
     } else {
-        (quote!(), quote!())
+        (quote!(), quote!(), quote!())
     };
 
     (quote! {
         impl #ident {
             pub const TYPE_URL: &'static str = #type_url;
+            
+            #path_token
+
             #cosmwasm_query
 
             pub fn to_proto_bytes(&self) -> Vec<u8> {
