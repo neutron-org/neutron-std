@@ -461,6 +461,11 @@ impl PrecDec {
             Uint256::one() + ((x - Uint256::one()) / y)
         }
     }
+
+    #[must_use = "converts a PrecDec to a string that can be passed and parsed by Neutron core"]
+    pub fn to_prec_dec_string(self) -> String {
+      self.atomics().to_string()
+    }
 }
 
 impl Fraction<Uint256> for PrecDec {
