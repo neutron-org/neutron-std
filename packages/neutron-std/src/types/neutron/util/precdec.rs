@@ -350,10 +350,10 @@ impl PrecDec {
         // TODO: This could be made more efficient once log10 is in:
         // https://github.com/rust-lang/rust/issues/70887
         // The max precision is something like `9 - log10(self.0) / 2`.
-        (0..14)
+        (0..=Self::DECIMAL_PLACES / 2)
             .rev()
             .find_map(|i| self.sqrt_with_precision(i))
-            // The last step (i = 0) is guaranteed to succeed because `isqrt(u128::MAX) * 10^9` does not overflow
+            // The last step (i = 0) is guaranteed to succeed because `isqrt(u256::MAX) * 10^13` does not overflow
             .unwrap()
     }
 
@@ -363,8 +363,9 @@ impl PrecDec {
     /// Returns `None` if the internal multiplication overflows.
     #[must_use = "this returns the result of the operation, without modifying the original"]
     fn sqrt_with_precision(&self, precision: u32) -> Option<Self> {
-        let inner_mul = Uint256::from(100u128).pow(precision);
+        let inner_mul = Uint256::from(10u128).pow(precision * 2 + 1);
         self.0.checked_mul(inner_mul).ok().map(|inner| {
+            let sq = inner.isqrt();
             let outer_mul = Uint256::from(10u128).pow(Self::DECIMAL_PLACES / 2 - precision);
             Self(inner.isqrt().checked_mul(outer_mul).unwrap())
         })
@@ -501,12 +502,11 @@ impl TryFrom<SignedDecimal> for PrecDec {
     type Error = PrecDecRangeExceeded;
 
     fn try_from(value: SignedDecimal) -> Result<Self, Self::Error> {
-        value
+       let atomics: Uint256  = value
             .atomics()
             .try_into()
-            .map(PrecDec)
-            .map_err(|_| PrecDecRangeExceeded)
-
+            .map_err(|_| PrecDecRangeExceeded)?;
+        Self::from_atomics(atomics, SignedDecimal::DECIMAL_PLACES)
     }
 }
 
@@ -514,11 +514,11 @@ impl TryFrom<SignedDecimal256> for PrecDec {
     type Error = PrecDecRangeExceeded;
 
     fn try_from(value: SignedDecimal256) -> Result<Self, Self::Error> {
-        value
+        let atomics: Uint256  = value
             .atomics()
             .try_into()
-            .map(PrecDec)
-            .map_err(|_| PrecDecRangeExceeded)
+            .map_err(|_| PrecDecRangeExceeded)?;
+        Self::from_atomics(atomics, SignedDecimal::DECIMAL_PLACES)
     }
 }
 
@@ -830,7 +830,7 @@ mod tests {
     #[test]
     fn precdec_from_decimal256_works() {
         let val = Decimal256::new(Uint256::from(Uint128::MAX));
-        assert_eq!(PrecDec::try_from(val), Ok(PrecDec::from_str("99").unwrap()));
+        assert_eq!(PrecDec::try_from(val), Ok(PrecDec::from_str("340282366920938463463.374607431768211455").unwrap()));
 
         assert_eq!(PrecDec::try_from(Decimal256::zero()), Ok(PrecDec::zero()));
         assert_eq!(PrecDec::try_from(Decimal256::one()), Ok(PrecDec::one()));
@@ -851,8 +851,7 @@ mod tests {
     fn precdec_try_from_signed_works() {
         assert_eq!(
             PrecDec::try_from(SignedDecimal::MAX).unwrap(),
-            PrecDec::raw(SignedDecimal::MAX.atomics().i128() as u128)
-        );
+            PrecDec::from_str("170141183460469231731.687303715884105727").unwrap());
         assert_eq!(
             PrecDec::try_from(SignedDecimal::zero()).unwrap(),
             PrecDec::zero()
@@ -1692,7 +1691,7 @@ mod tests {
     fn precdec_uint128_sqrt_is_precise() {
         assert_eq!(
             PrecDec::from_str("2").unwrap().sqrt(),
-            PrecDec::from_str("1.414213562373095048").unwrap() // https://www.wolframalpha.com/input/?i=sqrt%282%29
+            PrecDec::from_str("1.414213562373095048801688724").unwrap() // https://www.wolframalpha.com/input/?i=sqrt%282%29
         );
     }
 
@@ -1711,7 +1710,7 @@ mod tests {
             // The last two digits (27) are truncated below due to the algorithm
             // we use. Larger numbers will cause less precision.
             // https://www.wolframalpha.com/input/?i=sqrt%28400001%29
-            PrecDec::from_str("632.456322602596803200").unwrap()
+            PrecDec::from_str("632.456322602596803227841789792").unwrap()
         );
     }
 
