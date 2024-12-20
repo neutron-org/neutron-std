@@ -1,7 +1,7 @@
 [package]
 name = "neutron-std"
 description = "Standard library for Neutron with CosmWasm support included. This package is a modified copy of the osmosis package - https://github.com/osmosis-labs/osmosis-rust/tree/main/packages/osmosis-std"
-version = "5.0.0"
+version = "5.0.1-rc0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/neutron-org/neutron-std"

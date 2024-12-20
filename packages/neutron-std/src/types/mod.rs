@@ -4,6 +4,7 @@ pub mod cosmwasm;
 pub mod feemarket;
 pub mod gaia;
 pub mod ibc;
+pub mod interchain_security;
 pub mod neutron;
 pub mod osmosis;
 pub mod slinky;
