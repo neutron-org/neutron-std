@@ -41,6 +41,9 @@ pub const REPLACEMENTS: &[(&str, &str)] = &[
 // https://github.com/cosmos/gogoproto/blob/28b2facaa30178e137477bcc756a72a7a3c84b6b/gogoproto/gogo.proto#L130
 const GOGOPROTO_NULLABLE_EXTENSION_FIELD_NUMBER: u32 = 65001;
 
+// 65003 the number of the `customtype` field
+const GOGOPROTO_CUSTOM_TYPE_FIELD_NUMBER: u32 = 65003;
+
 pub fn add_derive_eq(mut attr: Attribute) -> Attribute {
     // find derive attribute
     if attr.path.is_ident("derive") {
@@ -449,6 +452,125 @@ pub fn respect_gogoproto_nullable(
         }
     }
 
+    s
+}
+
+fn get_custom_type(field: protobuf::descriptor::FieldDescriptorProto) -> Option<String> {
+    let sf = field
+        .options
+        .special_fields
+        .unknown_fields()
+        .get(GOGOPROTO_CUSTOM_TYPE_FIELD_NUMBER);
+
+    if let Some(custom_type) = sf {
+        return match custom_type {
+            protobuf::UnknownValueRef::LengthDelimited(bytes) => {
+                match String::from_utf8(bytes.to_vec()) {
+                    Ok(decoded_str) => Some(decoded_str),
+                    Err(_) => None,
+                }
+            }
+            _ => None,
+        };
+    }
+    None
+}
+
+fn is_field_precdec(
+    message_name: &str,
+    field_name: &str,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
+) -> bool {
+    let prec_dec_re =
+        Regex::new(r"^github\.com\/neutron-org\/neutron\/v\d+\/utils\/math\.PrecDec").unwrap();
+
+    for file in descriptor.file.iter() {
+        for message in file.clone().message_type {
+            // not a message we are searching for
+            if message.name() != message_name {
+                continue;
+            }
+
+            for field in message.clone().field {
+                // not a field we are searching for
+                if field.name() != field_name {
+                    continue;
+                }
+
+                // check if field is a math.PrecDec
+                if let Some(custom_type) = get_custom_type(field) {
+                    if prec_dec_re.is_match(&custom_type) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    false
+}
+
+pub fn use_precdec_type(
+    mut s: ItemStruct,
+    descriptor: &protobuf::descriptor::FileDescriptorSet,
+) -> ItemStruct {
+    // iterating over the fields in a message
+    if let Fields::Named(ref mut fields_named) = s.fields {
+        for field in fields_named.named.iter_mut() {
+            if let Some(ident) = &field.ident {
+                // if a underlying field is PrecDec
+                if is_field_precdec(&s.ident.to_string(), &ident.to_string(), descriptor) {
+                    let is_nullable = is_field_gogoproto_nullable(&s.ident.to_string(), &ident.to_string(), descriptor);
+
+                    // add custom PrecDec serializer
+                    let from_str: syn::Attribute = if is_nullable {
+                        parse_quote! {
+                            #[serde(
+                                serialize_with = "crate::serde::as_option_prec_dec::serialize",
+                                deserialize_with = "crate::serde::as_option_prec_dec::deserialize"
+                            )]
+                        }
+                    } else {
+                        parse_quote! {
+                            #[serde(
+                                serialize_with = "crate::serde::as_prec_dec::serialize",
+                                deserialize_with = "crate::serde::as_prec_dec::deserialize"
+                            )]
+                        }
+                    };
+                    field.attrs.append(&mut vec![from_str]);
+                    // set PrecDec type
+                    field.ty = parse_quote!(
+                        crate::util::precdec::PrecDec
+                    );
+
+                    // update the prost type to `message`
+                    for attr in field.attrs.iter_mut() {
+                        if let Ok(syn::Meta::List(meta_list)) = attr.parse_meta() {
+                            for nested in &meta_list.nested {
+                                if let syn::NestedMeta::Meta(syn::Meta::NameValue(name_value)) =
+                                    nested
+                                {
+                                    // Check if the key is `tag`
+                                    if name_value.path.is_ident("tag") {
+                                        // Extract the value as a string literal
+                                        if let syn::Lit::Str(wire_number) = &name_value.lit {
+                                            // Prost expects message to be Option<> unless explicitly marked as required
+                                            let required_tag = if is_nullable {quote! {} }else {quote!  {required,}};
+                                            // replace with the updated attr
+                                            *attr = parse_quote! {
+                                                #[prost(message, #required_tag tag = #wire_number)]
+                                            };
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     s
 }
 

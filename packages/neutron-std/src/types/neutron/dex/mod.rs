@@ -84,16 +84,28 @@ pub struct PoolReserves {
     pub reserves_maker_denom: ::prost::alloc::string::String,
     /// DEPRECATED: price_taker_to_maker will be removed in future release, `maker_price` should always be used.
     #[deprecated]
-    #[prost(string, tag = "3")]
-    pub price_taker_to_maker: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "3")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub price_taker_to_maker: crate::util::precdec::PrecDec,
     /// DEPRECATED: price_opposite_taker_maker was an internal implementation detail and will be removed in a future release.
     /// It is being kept strictly for backwards compatibility. The actual field value is unused.
     #[deprecated]
-    #[prost(string, tag = "4")]
-    pub price_opposite_taker_to_maker: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "4")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub price_opposite_taker_to_maker: crate::util::precdec::PrecDec,
     /// This is the price of the PoolReserves denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB )
-    #[prost(string, tag = "5")]
-    pub maker_price: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "5")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub maker_price: crate::util::precdec::PrecDec,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -224,11 +236,19 @@ pub struct LimitOrderTranche {
     pub expiration_time: ::core::option::Option<crate::shim::Timestamp>,
     /// DEPRECATED: price_taker_to_maker will be removed in future release, `maker_price` should always be used.
     #[deprecated]
-    #[prost(string, tag = "7")]
-    pub price_taker_to_maker: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "7")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub price_taker_to_maker: crate::util::precdec::PrecDec,
     /// This is the price of the LimitOrder denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB )
-    #[prost(string, tag = "8")]
-    pub maker_price: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "8")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub maker_price: crate::util::precdec::PrecDec,
 }
 /// Params defines the parameters for the module.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -467,15 +487,23 @@ pub struct MsgPlaceLimitOrder {
     #[prost(string, tag = "10")]
     #[prost(optional)]
     pub max_amount_out: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag = "11")]
+    #[prost(message, tag = "11")]
+    #[serde(
+        serialize_with = "crate::serde::as_option_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_option_prec_dec::deserialize"
+    )]
     #[prost(optional)]
-    pub limit_sell_price: ::core::option::Option<::prost::alloc::string::String>,
+    pub limit_sell_price: ::core::option::Option<crate::util::precdec::PrecDec>,
     /// min_average_sell_price is an optional parameter that sets a required minimum average price for the entire trade.
     /// if the min_average_sell_price is not met the trade will fail.
     /// If min_average_sell_price is omitted limit_sell_price will be used instead
-    #[prost(string, tag = "12")]
+    #[prost(message, tag = "12")]
+    #[serde(
+        serialize_with = "crate::serde::as_option_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_option_prec_dec::deserialize"
+    )]
     #[prost(optional)]
-    pub min_average_sell_price: ::core::option::Option<::prost::alloc::string::String>,
+    pub min_average_sell_price: ::core::option::Option<crate::util::precdec::PrecDec>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -618,8 +646,12 @@ pub struct MsgMultiHopSwap {
     pub routes: ::prost::alloc::vec::Vec<MultiHopRoute>,
     #[prost(string, tag = "4")]
     pub amount_in: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub exit_limit_price: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "5")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub exit_limit_price: crate::util::precdec::PrecDec,
     /// If pickBestRoute == true then all routes are run and the route with the
     /// best price is chosen otherwise, the first succesful route is used.
     #[prost(bool, tag = "6")]
@@ -1425,8 +1457,12 @@ pub struct QueryEstimateMultiHopSwapRequest {
     pub routes: ::prost::alloc::vec::Vec<MultiHopRoute>,
     #[prost(string, tag = "4")]
     pub amount_in: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub exit_limit_price: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "5")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub exit_limit_price: crate::util::precdec::PrecDec,
     /// If pickBestRoute == true then all routes are run and the route with the
     /// best price is chosen otherwise, the first succesful route is used.
     #[prost(bool, tag = "6")]
@@ -2036,7 +2072,7 @@ impl<'a, Q: cosmwasm_std::CustomQuery> DexQuerier<'a, Q> {
         receiver: ::prost::alloc::string::String,
         routes: ::prost::alloc::vec::Vec<MultiHopRoute>,
         amount_in: ::prost::alloc::string::String,
-        exit_limit_price: ::prost::alloc::string::String,
+        exit_limit_price: crate::util::precdec::PrecDec,
         pick_best_route: bool,
     ) -> Result<QueryEstimateMultiHopSwapResponse, cosmwasm_std::StdError> {
         QueryEstimateMultiHopSwapRequest {
