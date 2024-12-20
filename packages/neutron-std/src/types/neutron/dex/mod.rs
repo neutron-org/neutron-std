@@ -2177,3 +2177,34 @@ impl<'a, Q: cosmwasm_std::CustomQuery> DexQuerier<'a, Q> {
         QuerySimulateMultiHopSwapRequest { msg }.query(self.querier)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+
+    use prost::Message;
+
+    use crate::util::precdec::PrecDec;
+
+    use super::*;
+    #[test]
+    fn marshall_placelimitorder(){
+        let lo = MsgPlaceLimitOrder{
+            creator: "test".to_string(),
+            receiver: "test".to_string(),
+            tick_index_in_to_out: 0,
+            limit_sell_price: Some(PrecDec::from_str("1.1").unwrap()),
+            token_in: "TokenA".to_string(),
+            token_out: "TokenB".to_string(),
+            min_average_sell_price: None,
+            amount_in: "100".to_string(),
+            order_type: 0,
+            expiration_time: None,
+            max_amount_out: None,
+
+        };
+        let mut buf = Vec::new();
+        lo.encode(&mut buf).unwrap();
+        print!("{:?}", buf)
+    }
+}
