@@ -8,4 +8,3 @@ pub mod ibcratelimit;
 pub mod interchainqueries;
 pub mod interchaintxs;
 pub mod transfer;
-pub mod util;

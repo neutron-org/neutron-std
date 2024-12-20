@@ -154,6 +154,7 @@ fn transform_items(
                 let s = transformers::add_derive_eq_struct(&s);
                 let s = transformers::append_attrs_struct(src, &s, descriptor);
                 let s = transformers::serde_alias_id_with_uppercased(s);
+                let s = transformers::use_precdec_type(s, descriptor);
                 let s = transformers::respect_gogoproto_nullable(s, descriptor);
                 // A hack to make Pagination::next_key optional.
                 // Remove if [this PR](https://github.com/cosmos/cosmos-sdk/pull/20246) is merged and released

@@ -19,6 +19,10 @@ pub struct Params {
         deserialize_with = "crate::serde::as_str_vec::deserialize"
     )]
     pub fee_tiers: ::prost::alloc::vec::Vec<u64>,
-    #[prost(string, tag = "2")]
-    pub max_true_taker_spread: ::prost::alloc::string::String,
+    #[prost(message, required, tag = "2")]
+    #[serde(
+        serialize_with = "crate::serde::as_prec_dec::serialize",
+        deserialize_with = "crate::serde::as_prec_dec::deserialize"
+    )]
+    pub max_true_taker_spread: crate::util::precdec::PrecDec,
 }

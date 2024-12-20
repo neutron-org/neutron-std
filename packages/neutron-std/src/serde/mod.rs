@@ -135,3 +135,53 @@ pub mod as_option_base64_encoded_string {
         }
     }
 }
+
+pub mod as_option_prec_dec {
+
+    use crate::util::precdec::PrecDec;
+    use serde::{de, Deserialize, Deserializer, Serializer};
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<PrecDec>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let encoded_prec_dec_str: Option<String> = Option::deserialize(deserializer)?;
+        match encoded_prec_dec_str {
+            Some(s) => PrecDec::from_prec_dec_str(s.as_str())
+                .map(|p| Some(p))
+                .map_err(de::Error::custom),
+            None => Ok(None),
+        }
+    }
+
+    pub fn serialize<S>(value: &Option<PrecDec>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match value {
+            Some(p) => serializer.serialize_str(&p.to_prec_dec_string()),
+            None => serializer.serialize_none(),
+        }
+    }
+}
+
+pub mod as_prec_dec {
+    use crate::util::precdec::PrecDec;
+    use serde::{de, Deserialize, Deserializer, Serializer};
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<PrecDec, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let encoded_prec_dec_str: String = String::deserialize(deserializer)?;
+
+        PrecDec::from_prec_dec_str(&encoded_prec_dec_str.to_owned()).map_err(de::Error::custom)
+    }
+
+    pub fn serialize<S>(value: &PrecDec, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&value.to_prec_dec_string())
+    }
+}
