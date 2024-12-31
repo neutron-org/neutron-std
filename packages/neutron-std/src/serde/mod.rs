@@ -232,7 +232,7 @@ fn parse_test() {
 pub mod as_option_prec_dec {
 
     use crate::util::precdec::PrecDec;
-    use serde::{de, Deserialize, Deserializer, Serializer};
+    use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<PrecDec>, D::Error>
     where
@@ -252,7 +252,7 @@ pub mod as_option_prec_dec {
         S: Serializer,
     {
         match value {
-            Some(p) => serializer.serialize_str(&p.to_prec_dec_string()),
+            Some(p) => p.atomics().serialize(serializer),
             None => serializer.serialize_none(),
         }
     }
@@ -260,7 +260,7 @@ pub mod as_option_prec_dec {
 
 pub mod as_prec_dec {
     use crate::util::precdec::PrecDec;
-    use serde::{de, Deserialize, Deserializer, Serializer};
+    use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<PrecDec, D::Error>
     where
@@ -275,6 +275,6 @@ pub mod as_prec_dec {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&value.to_prec_dec_string())
+        value.atomics().serialize(serializer)
     }
 }
