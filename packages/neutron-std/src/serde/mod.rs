@@ -252,7 +252,8 @@ pub mod as_option_prec_dec {
         S: Serializer,
     {
         match value {
-            Some(p) => p.atomics().serialize(serializer),
+            Some(p) => p.serialize(serializer),
+
             None => serializer.serialize_none(),
         }
     }
@@ -275,6 +276,6 @@ pub mod as_prec_dec {
     where
         S: Serializer,
     {
-        value.atomics().serialize(serializer)
+        value.serialize(serializer)
     }
 }

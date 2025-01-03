@@ -762,7 +762,9 @@ impl Serialize for PrecDec {
     where
         S: ser::Serializer,
     {
-        serializer.serialize_str(&self.to_string())
+        let atomics_str = &self.atomics().to_string();
+
+        serializer.serialize_str(&atomics_str)
     }
 }
 
