@@ -2187,24 +2187,32 @@ mod tests {
     use crate::util::precdec::PrecDec;
 
     use super::*;
+
     #[test]
-    fn marshall_placelimitorder(){
+    fn test_marshall_placelimitorder(){
+        let price_opt = Some(PrecDec::from_str("1.1").unwrap());
         let lo = MsgPlaceLimitOrder{
             creator: "test".to_string(),
             receiver: "test".to_string(),
-            tick_index_in_to_out: 0,
-            limit_sell_price: Some(PrecDec::from_str("1.1").unwrap()),
             token_in: "TokenA".to_string(),
             token_out: "TokenB".to_string(),
-            min_average_sell_price: None,
-            amount_in: "100".to_string(),
-            order_type: 0,
+            tick_index_in_to_out: 99,
+            amount_in: "1".to_string(),
+            order_type: 4,
             expiration_time: None,
+            limit_sell_price: price_opt,
             max_amount_out: None,
-
+            min_average_sell_price: None,
         };
-        let mut buf = Vec::new();
-        lo.encode(&mut buf).unwrap();
-        print!("{:?}", buf)
+        let mut prost_buf = Vec::new();
+        lo.encode(&mut prost_buf).unwrap();
+
+        assert_eq!(vec![10, 4, 116, 101, 115, 116, 18, 4, 116, 101, 115, 116, 26, 6, 84, 111, 107, 101, 110, 65, 34, 6, 84, 111, 107, 101, 110, 66, 40, 99, 58, 1, 49, 64, 4, 90, 28, 49, 49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48], prost_buf);
+
+
+            let decoded: MsgPlaceLimitOrder = MsgPlaceLimitOrder::decode(&prost_buf[..]).unwrap();
+        print!("decoded: {:?}", decoded);
+
+
     }
 }

@@ -805,7 +805,7 @@ impl Message for PrecDec {
         B: prost::bytes::BufMut,
     {
         let value = self.to_prec_dec_string();
-        prost::encoding::string::encode(1, &value, buf);
+        buf.put_slice(value.as_bytes());
     }
 
     fn merge_field<B>(
@@ -818,24 +818,47 @@ impl Message for PrecDec {
     where
         B: prost::bytes::Buf,
     {
-        if tag == 1 {
-            let mut value = String::new();
-            prost::encoding::string::merge(wire_type, &mut value, buf, ctx)?;
-            *self =
-                PrecDec::from_prec_dec_str(&value).map_err(|e| DecodeError::new(e.to_string()))?;
-            Ok(())
-        } else {
-            skip_field(wire_type, tag, buf, ctx)
+        print!("here");
+        // Ensure the correct tag
+        if tag != 1 {
+            return prost::encoding::skip_field(wire_type, tag, buf, ctx);
         }
+
+        // Ensure the correct wire type
+        if wire_type != WireType::LengthDelimited {
+            return Err(DecodeError::new(format!(
+                "Expected WireType::LengthDelimited, got {:?}",
+                wire_type
+            )));
+        }
+
+        // Read the entire buffer as the field value (bypass length prefix)
+        let mut value_bytes = Vec::new();
+        while buf.has_remaining() {
+            value_bytes.push(buf.get_u8());
+        }
+
+        // Convert the raw bytes to a string
+        let value = String::from_utf8(value_bytes)
+            .map_err(|_| DecodeError::new("Invalid UTF-8 in PrecDec string"))?;
+
+        // Parse the PrecDec from the string
+        *self = PrecDec::from_prec_dec_str(&value).map_err(|e| {
+            DecodeError::new(format!(
+                "Failed to parse PrecDec from string: {}",
+                e.to_string()
+            ))
+        })?;
+
+        Ok(())
     }
 
     fn encoded_len(&self) -> usize {
-        let value = self.to_prec_dec_string();
-        prost::encoding::string::encoded_len(1, &value)
+        self.to_prec_dec_string().as_bytes().len()
     }
 
     fn clear(&mut self) {
-        *self = PrecDec(Uint256::zero());
+        *self = PrecDec::zero();
     }
 }
 
