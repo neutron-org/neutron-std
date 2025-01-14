@@ -120,7 +120,7 @@ pub struct MarketMap {
     /// Markets is the full list of tickers and their associated configurations
     /// to be stored on-chain.
     #[prost(map = "string, message", tag = "1")]
-    pub markets: ::std::collections::HashMap<::prost::alloc::string::String, Market>,
+    pub markets: ::std::collections::BTreeMap<::prost::alloc::string::String, Market>,
 }
 /// Params defines the parameters for the x/marketmap module.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -388,7 +388,7 @@ pub struct MsgUpsertMarketsResponse {
     /// updated.
     /// Deprecated: This field will be empty in all responses.
     #[prost(map = "string, bool", tag = "1")]
-    pub market_updates: ::std::collections::HashMap<::prost::alloc::string::String, bool>,
+    pub market_updates: ::std::collections::BTreeMap<::prost::alloc::string::String, bool>,
 }
 /// MsgCreateMarkets defines a message carrying a payload for creating markets in
 /// the x/marketmap module.
