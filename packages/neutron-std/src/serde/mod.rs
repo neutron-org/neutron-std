@@ -14,8 +14,8 @@ use std::{
 struct StringOrNumberVisitor<T> {
     p: PhantomData<T>,
 }
-// The Visitor helps deserialize a number, both from its numerical JSON representation and from a string. 
-// For example, for the struct: 
+// The Visitor helps deserialize a number, both from its numerical JSON representation and from a string.
+// For example, for the struct:
 // ```rust
 // struct Foo {
 //     pub bar: i32;
@@ -167,7 +167,7 @@ pub mod as_base64_encoded_string {
     where
         S: Serializer,
     {
-        Binary::new(values.to_vec())
+        Binary::from(values)
             .to_base64()
             .serialize(serializer)
     }
@@ -196,7 +196,7 @@ pub mod as_option_base64_encoded_string {
     {
         match value {
             Some(vec) => {
-                let encoded_string = Binary::new(vec.clone()).to_base64();
+                let encoded_string = Binary::from(vec.as_slice()).to_base64();
                 encoded_string.serialize(serializer)
             }
             None => serializer.serialize_none(),
@@ -204,12 +204,11 @@ pub mod as_option_base64_encoded_string {
     }
 }
 
-
-// NumberOrString is a helper enum that helps us determine which 
-// JSON numeric representation we are working with. If it's a string, 
-// we will get the value `NumberOrString::String("-11")`. 
-// If we are dealing with a numeric representation, 
-// we will get `NumberOrString::Number(-11i64)`. 
+// NumberOrString is a helper enum that helps us determine which
+// JSON numeric representation we are working with. If it's a string,
+// we will get the value `NumberOrString::String("-11")`.
+// If we are dealing with a numeric representation,
+// we will get `NumberOrString::Number(-11i64)`.
 // Then, using pattern matching, we can select the appropriate algorithm to work with the data.
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(untagged)]

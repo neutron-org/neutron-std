@@ -9,7 +9,7 @@ homepage = "https://neutron.org"
 readme = "README.md"
 
 [dependencies]
-cosmwasm-std = { workspace = true, features = ["cosmwasm_2_0"] }
+cosmwasm-std = { workspace = true, features = ["stargate"] }
 cosmos-sdk-proto = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde-cw-value = "0.7.0"

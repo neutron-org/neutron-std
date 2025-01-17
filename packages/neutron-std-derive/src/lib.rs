@@ -33,7 +33,7 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
     // provided buffer had insufficient capacity. Message encoding is otherwise
     // infallible.
 
-    let (query_request_conversion, cosmwasm_query, path_token) = if get_attr(
+    let (query_request_conversion, cosmwasm_query) = if get_attr(
         "proto_query",
         &input.attrs,
     )
@@ -44,79 +44,49 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
         let query_request_conversion = quote! {
             impl <Q: cosmwasm_std::CustomQuery> From<#ident> for cosmwasm_std::QueryRequest<Q> {
                 fn from(msg: #ident) -> Self {
-                    cosmwasm_std::QueryRequest::<Q>::Grpc(cosmwasm_std::GrpcQuery {
+                    cosmwasm_std::QueryRequest::<Q>::Stargate {
                         path: #path.to_string(),
                         data: msg.into(),
-                    })
+                    }
                 }
             }
         };
 
         let cosmwasm_query = quote! {
             pub fn query(self, querier: &cosmwasm_std::QuerierWrapper<impl cosmwasm_std::CustomQuery>) -> cosmwasm_std::StdResult<#res> {
-                use prost::Message;
-                let resp = #res::decode(
-                    querier.query_grpc(
-                        #path.to_string(),
-                        self.to_proto_bytes().into(),
-                    )?
-                    .as_slice(),
-                );
-                match resp {
-                    Err(e) => Err(cosmwasm_std::StdError::generic_err(format!(
-                        "Can't decode item: {}",
-                        e
-                    ))),
-                    Ok(data) => Ok(data),
-                }
+                querier.query::<#res>(&self.into())
             }
         };
 
-        let path_token = quote! {
-            pub const PATH: &'static str = #path;
-        };
-
-        (query_request_conversion, cosmwasm_query, path_token)
+        (query_request_conversion, cosmwasm_query)
     } else {
-        (quote!(), quote!(), quote!())
+        (quote!(), quote!())
     };
 
     (quote! {
         impl #ident {
             pub const TYPE_URL: &'static str = #type_url;
-            
-            #path_token
 
             #cosmwasm_query
-
-            pub fn to_proto_bytes(&self) -> Vec<u8> {
-                let mut bytes = Vec::new();
-                prost::Message::encode(self, &mut bytes)
-                    .expect("Message encoding must be infallible");
-                bytes
-            }
-            pub fn to_any(&self) -> crate::shim::Any {
-                crate::shim::Any {
-                    type_url: Self::TYPE_URL.to_string(),
-                    value: self.to_proto_bytes(),
-                }
-            }
         }
 
         #query_request_conversion
 
         impl From<#ident> for cosmwasm_std::Binary {
             fn from(msg: #ident) -> Self {
-                cosmwasm_std::Binary::new(msg.to_proto_bytes())
+                 let mut bytes = Vec::new();
+                prost::Message::encode(&msg, &mut bytes)
+                    .expect("Message encoding must be infallible");
+                cosmwasm_std::Binary(bytes)
             }
         }
 
         impl<T> From<#ident> for cosmwasm_std::CosmosMsg<T> {
             fn from(msg: #ident) -> Self {
-                cosmwasm_std::CosmosMsg::<T>::Any(cosmwasm_std::AnyMsg {
+                cosmwasm_std::CosmosMsg::<T>::Stargate {
                     type_url: #type_url.to_string(),
                     value: msg.into(),
-                })
+                }
             }
         }
 
@@ -126,15 +96,15 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
             fn try_from(binary: cosmwasm_std::Binary) -> ::std::result::Result<Self, Self::Error> {
                 use ::prost::Message;
                 Self::decode(&binary[..]).map_err(|e| {
-                    cosmwasm_std::StdError::parse_err(
-                        stringify!(#ident),
-                        format!(
+                    cosmwasm_std::StdError::ParseErr {
+                        target_type: stringify!(#ident).to_string(),
+                        msg:format!(
                             "Unable to decode binary: \n  - base64: {}\n  - bytes array: {:?}\n\n{:?}",
                             binary,
                             binary.to_vec(),
                             e
-                        )
-                    )
+                        ),
+                    }
                 })
             }
         }
@@ -145,17 +115,18 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
             fn try_from(result: cosmwasm_std::SubMsgResult) -> ::std::result::Result<Self, Self::Error> {
                 result
                     .into_result()
-                    .map_err(|e| cosmwasm_std::StdError::generic_err(e))?
+                    .map_err(|e| cosmwasm_std::StdError::GenericErr { msg: e })?
                     .data
-                    .ok_or_else(|| cosmwasm_std::StdError::not_found("cosmwasm_std::SubMsgResult::<T>"))?
+                    .ok_or_else(|| cosmwasm_std::StdError::NotFound {
+                        kind: "cosmwasm_std::SubMsgResult::<T>".to_string(),
+                    })?
                     .try_into()
             }
         }
-    })
-    .into()
+    }).into()
 }
 
-fn get_type_url(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
+fn get_type_url(attrs: &Vec<syn::Attribute>) -> proc_macro2::TokenStream {
     let proto_message = get_attr("proto_message", attrs).and_then(|a| a.parse_meta().ok());
 
     if let Some(syn::Meta::List(meta)) = proto_message.clone() {
@@ -177,7 +148,7 @@ fn get_type_url(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
     }
 }
 
-fn get_query_attrs<F>(attrs: &[syn::Attribute], f: F) -> proc_macro2::TokenStream
+fn get_query_attrs<F>(attrs: &Vec<syn::Attribute>, f: F) -> proc_macro2::TokenStream
 where
     F: FnMut(&Vec<TokenTree>) -> Option<proc_macro2::TokenStream>,
 {
@@ -217,9 +188,7 @@ where
 }
 
 fn get_attr<'a>(attr_ident: &str, attrs: &'a [syn::Attribute]) -> Option<&'a syn::Attribute> {
-    attrs
-        .iter()
-        .find(|&attr| attr.path.segments.len() == 1 && attr.path.segments[0].ident == attr_ident)
+    attrs.iter().find(|&attr| attr.path.segments.len() == 1 && attr.path.segments[0].ident == attr_ident)
 }
 
 fn proto_message_attr_error<T: quote::ToTokens>(tokens: T) -> proc_macro2::TokenStream {
