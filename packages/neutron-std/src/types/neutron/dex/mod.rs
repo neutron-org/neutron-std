@@ -2181,7 +2181,8 @@ impl<'a, Q: cosmwasm_std::CustomQuery> DexQuerier<'a, Q> {
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
-
+    use cosmwasm_std::to_base64;
+    use hex::ToHex;
     use prost::Message;
 
     use crate::util::precdec::PrecDec;
@@ -2207,8 +2208,9 @@ mod tests {
         let mut prost_buf = Vec::new();
         lo.encode(&mut prost_buf).unwrap();
 
-        assert_eq!(vec![10, 4, 116, 101, 115, 116, 18, 4, 116, 101, 115, 116, 26, 6, 84, 111, 107, 101, 110, 65, 34, 6, 84, 111, 107, 101, 110, 66, 40, 99, 58, 1, 49, 64, 4, 90, 28, 49, 49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48], prost_buf);
+        assert_eq!(vec![10, 4, 116, 101, 115, 116, 18, 4, 116, 101, 115, 116, 26, 6, 84, 111, 107, 101, 110, 65, 34, 6, 84, 111, 107, 101, 110, 66, 40, 99, 58, 1, 49, 64, 4, 90, 28, 10, 28, 49, 49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48], prost_buf);
 
+        println!("{:?}", to_base64(&prost_buf));
 
             let decoded: MsgPlaceLimitOrder = MsgPlaceLimitOrder::decode(&prost_buf[..]).unwrap();
         print!("decoded: {:?}", decoded);

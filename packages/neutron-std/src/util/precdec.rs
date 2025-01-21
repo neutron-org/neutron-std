@@ -2,7 +2,7 @@ use core::cmp::Ordering;
 use core::fmt::{self, Write};
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign};
 use core::str::FromStr;
-use prost::encoding::{skip_field, WireType};
+use prost::encoding::{bytes, decode_varint, skip_field, WireType};
 use prost::{DecodeError, Message};
 use serde::{de, ser, Deserialize, Deserializer, Serialize};
 
@@ -16,6 +16,7 @@ use cosmwasm_std::{
 use cosmwasm_std::{Decimal256, SignedDecimal, SignedDecimal256};
 
 use cosmwasm_std::{Fraction, Isqrt, Uint256, Uint512};
+use prost::bytes::BufMut;
 
 /// A fixed-point decimal value with 27 fractional digits, i.e. Precdec(1_000_000_000_000_000_000) == 1.0
 ///
@@ -805,7 +806,7 @@ impl Message for PrecDec {
         B: prost::bytes::BufMut,
     {
         let value = self.to_prec_dec_string();
-        buf.put_slice(value.as_bytes());
+        prost::encoding::string::encode(1, &value, buf)
     }
 
     fn merge_field<B>(
@@ -832,8 +833,14 @@ impl Message for PrecDec {
             )));
         }
 
+        let len = decode_varint(buf)?;
+        if len > buf.remaining() as u64 {
+            return Err(DecodeError::new("buffer underflow"));
+        }
+        let len = len as usize;
+
         // Read the entire buffer as the field value (bypass length prefix)
-        let mut value_bytes = Vec::new();
+        let mut value_bytes = Vec::with_capacity(len);
         while buf.has_remaining() {
             value_bytes.push(buf.get_u8());
         }
