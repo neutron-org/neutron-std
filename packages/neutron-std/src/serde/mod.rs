@@ -14,8 +14,8 @@ use std::{
 struct StringOrNumberVisitor<T> {
     p: PhantomData<T>,
 }
-// The Visitor helps deserialize a number, both from its numerical JSON representation and from a string. 
-// For example, for the struct: 
+// The Visitor helps deserialize a number, both from its numerical JSON representation and from a string.
+// For example, for the struct:
 // ```rust
 // struct Foo {
 //     pub bar: i32;
@@ -205,11 +205,11 @@ pub mod as_option_base64_encoded_string {
 }
 
 
-// NumberOrString is a helper enum that helps us determine which 
-// JSON numeric representation we are working with. If it's a string, 
-// we will get the value `NumberOrString::String("-11")`. 
-// If we are dealing with a numeric representation, 
-// we will get `NumberOrString::Number(-11i64)`. 
+// NumberOrString is a helper enum that helps us determine which
+// JSON numeric representation we are working with. If it's a string,
+// we will get the value `NumberOrString::String("-11")`.
+// If we are dealing with a numeric representation,
+// we will get `NumberOrString::Number(-11i64)`.
 // Then, using pattern matching, we can select the appropriate algorithm to work with the data.
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
@@ -227,4 +227,55 @@ fn parse_test() {
     let str = "\"-11\"";
     let res = serde_json_wasm::from_str::<NumberOrString<i64>>(str).unwrap();
     assert_eq!(res, NumberOrString::String("-11".to_string()));
+}
+
+pub mod as_option_prec_dec {
+
+    use crate::util::precdec::PrecDec;
+    use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<PrecDec>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let encoded_prec_dec_str: Option<String> = Option::deserialize(deserializer)?;
+        match encoded_prec_dec_str {
+            Some(s) => PrecDec::from_prec_dec_str(s.as_str())
+                .map(|p| Some(p))
+                .map_err(de::Error::custom),
+            None => Ok(None),
+        }
+    }
+
+    pub fn serialize<S>(value: &Option<PrecDec>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match value {
+            Some(p) => p.serialize(serializer),
+
+            None => serializer.serialize_none(),
+        }
+    }
+}
+
+pub mod as_prec_dec {
+    use crate::util::precdec::PrecDec;
+    use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<PrecDec, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let encoded_prec_dec_str: String = String::deserialize(deserializer)?;
+
+        PrecDec::from_prec_dec_str(&encoded_prec_dec_str.to_owned()).map_err(de::Error::custom)
+    }
+
+    pub fn serialize<S>(value: &PrecDec, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        value.serialize(serializer)
+    }
 }
