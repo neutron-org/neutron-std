@@ -1,4 +1,4 @@
-use ::serde::{Deserialize, Deserializer, Serialize, Serializer};
+use ::serde::{ser, Deserialize, Deserializer, Serialize, Serializer};
 use chrono::{DateTime, Utc};
 use cosmwasm_std::StdResult;
 use serde::de;
@@ -6,6 +6,8 @@ use serde::de::Visitor;
 
 use std::fmt;
 use std::str::FromStr;
+
+use prost::Message;
 
 #[derive(Clone, PartialEq, Eq, ::prost::Message, schemars::JsonSchema)]
 pub struct Timestamp {
@@ -179,7 +181,7 @@ macro_rules! expand_as_any {
         impl Serialize for Any {
             fn serialize<S>(
                 &self,
-                _serializer: S,
+                serializer: S,
             ) -> Result<<S as ::serde::Serializer>::Ok, <S as ::serde::Serializer>::Error>
             where
                 S: ::serde::Serializer,
@@ -227,7 +229,7 @@ macro_rules! expand_as_any {
 
                 match type_url {
                     // @type found
-                    Some(_) => {
+                    Some(t) => {
                         $(
                             if t == <$ty>::TYPE_URL {
                                 return <$ty>::deserialize(
@@ -282,7 +284,18 @@ macro_rules! expand_as_any {
 // must order by type that has more information for Any deserialization to
 // work correctly. Since after serialization, it currently loses @type tag.
 // And deserialization works by trying to iteratively match the structure.
-expand_as_any!();
+expand_as_any!(
+    // accounts have distincted structure
+    crate::types::cosmos::auth::v1beta1::BaseAccount,
+    crate::types::cosmos::auth::v1beta1::ModuleAccount,
+    // pubkey required for base account
+    // it can't be distinced by structure
+    // so deserialing it back might not work properly
+    crate::types::cosmos::crypto::secp256k1::PubKey,
+    crate::types::cosmos::crypto::secp256r1::PubKey,
+    crate::types::cosmos::crypto::ed25519::PubKey,
+    crate::types::cosmos::staking::v1beta1::Validator,
+);
 
 macro_rules! impl_prost_types_exact_conversion {
     ($t:ident | $($arg:ident),*) => {
