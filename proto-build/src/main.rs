@@ -22,26 +22,26 @@ const INTERCHAIN_SECURITY_REPO: &str = "https://github.com/cosmos/interchain-sec
 const ADMIN_MODULE_REPO: &str = "https://github.com/neutron-org/admin-module.git";
 
 /// The Cosmos SDK commit or tag to be cloned and used to build the proto files
-const COSMOS_SDK_REV: &str = "v0.50.9-neutron";
+const COSMOS_SDK_REV: &str = "v0.50.11-neutron";
 
 /// The Neutron commit or tag to be cloned and used to build the proto files
-const NEUTRON_REV: &str = "v5.0.1";
+const NEUTRON_REV: &str = "v5.1.2";
 
 /// The wasmd commit or tag to be cloned and used to build the proto files
-const WASMD_REV: &str = "v0.53.0-neutron";
+const WASMD_REV: &str = "v0.53.2-neutron";
 
 /// The cometbft commit or tag to be cloned and used to build the proto files
-const COMETBFT_REV: &str = "v0.38.11";
+const COMETBFT_REV: &str = "v0.38.17";
 
 /// The ibc-go commit or tag to be cloned and used to build the proto files
-const IBC_GO_REV: &str = "v8.5.1";
+const IBC_GO_REV: &str = "v8.5.2";
 
 /// The ics23 commit or tag to be cloned and used to build the proto files
 const ICS23_REV: &str = "go/v0.11.0";
 
 const FEEMARKET_REV: &str = "v1.1.1";
 
-const SLINKY_REV: &str = "v1.0.12";
+const SLINKY_REV: &str = "v1.2.0";
 
 const ADMIN_MODULE_REV: &str = "v2.0.2";
 
