@@ -313,6 +313,68 @@ pub struct GetCurrencyPairMappingResponse {
     pub currency_pair_mapping:
         ::std::collections::HashMap<u64, super::super::types::v1::CurrencyPair>,
 }
+/// GetCurrencyPairMappingRequest is the GetCurrencyPairMapping request type.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.oracle.v1.GetCurrencyPairMappingListRequest")]
+#[proto_query(
+    path = "/slinky.oracle.v1.Query/GetCurrencyPairMappingList",
+    response_type = GetCurrencyPairMappingListResponse
+)]
+pub struct GetCurrencyPairMappingListRequest {}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.oracle.v1.CurrencyPairMapping")]
+pub struct CurrencyPairMapping {
+    /// ID is the unique identifier for this currency pair string.
+    #[prost(uint64, tag = "1")]
+    #[serde(alias = "ID")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub id: u64,
+    /// CurrencyPair is the human-readable representation of the currency pair.
+    #[prost(message, optional, tag = "2")]
+    pub currency_pair: ::core::option::Option<super::super::types::v1::CurrencyPair>,
+}
+/// GetCurrencyPairMappingResponse is the GetCurrencyPairMapping response type.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.oracle.v1.GetCurrencyPairMappingListResponse")]
+pub struct GetCurrencyPairMappingListResponse {
+    /// mappings is a list of the id representing the currency pair
+    /// to the currency pair itself.
+    #[prost(message, repeated, tag = "1")]
+    pub mappings: ::prost::alloc::vec::Vec<CurrencyPairMapping>,
+}
 /// Given an authority + a set of CurrencyPairs, the x/oracle module will
 /// check to see that the authority has permissions to update the set of
 /// CurrencyPairs tracked in the oracle, and add the given CurrencyPairs to be
@@ -421,5 +483,10 @@ impl<'a, Q: cosmwasm_std::CustomQuery> OracleQuerier<'a, Q> {
         &self,
     ) -> Result<GetCurrencyPairMappingResponse, cosmwasm_std::StdError> {
         GetCurrencyPairMappingRequest {}.query(self.querier)
+    }
+    pub fn get_currency_pair_mapping_list(
+        &self,
+    ) -> Result<GetCurrencyPairMappingListResponse, cosmwasm_std::StdError> {
+        GetCurrencyPairMappingListRequest {}.query(self.querier)
     }
 }

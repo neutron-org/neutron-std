@@ -227,6 +227,42 @@ pub struct MarketMapResponse {
     #[serde(alias = "chainID")]
     pub chain_id: ::prost::alloc::string::String,
 }
+/// MarketsRequest is the query request for the Market query.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.marketmap.v1.MarketsRequest")]
+#[proto_query(
+    path = "/slinky.marketmap.v1.Query/Markets",
+    response_type = MarketsResponse
+)]
+pub struct MarketsRequest {}
+/// MarketsResponse is the query response for the Markets query.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.marketmap.v1.MarketsResponse")]
+pub struct MarketsResponse {
+    /// Markets is a sorted list of all markets in the module.
+    #[prost(message, repeated, tag = "1")]
+    pub markets: ::prost::alloc::vec::Vec<Market>,
+}
 /// MarketRequest is the query request for the Market query.
 /// It takes the currency pair of the market as an argument.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -542,6 +578,48 @@ pub struct MsgRemoveMarketAuthorities {
 )]
 #[proto_message(type_url = "/slinky.marketmap.v1.MsgRemoveMarketAuthoritiesResponse")]
 pub struct MsgRemoveMarketAuthoritiesResponse {}
+/// MsgRemoveMarkets defines the Msg/RemoveMarkets request type. It contains the
+/// new markets to be removed from the market map.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.marketmap.v1.MsgRemoveMarkets")]
+pub struct MsgRemoveMarkets {
+    /// Authority is the signer of this transaction.  This authority must be
+    /// authorized by the module to execute the message.
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// Markets is the list of markets to remove.
+    #[prost(string, repeated, tag = "2")]
+    pub markets: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// MsgRemoveMarketsResponse defines the
+/// Msg/MsgRemoveMarketsResponse response type.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/slinky.marketmap.v1.MsgRemoveMarketsResponse")]
+pub struct MsgRemoveMarketsResponse {
+    /// DeletedMarkets is the list of markets that were removed.
+    #[prost(string, repeated, tag = "1")]
+    pub deleted_markets: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
 pub struct MarketmapQuerier<'a, Q: cosmwasm_std::CustomQuery> {
     querier: &'a cosmwasm_std::QuerierWrapper<'a, Q>,
 }
@@ -551,6 +629,9 @@ impl<'a, Q: cosmwasm_std::CustomQuery> MarketmapQuerier<'a, Q> {
     }
     pub fn market_map(&self) -> Result<MarketMapResponse, cosmwasm_std::StdError> {
         MarketMapRequest {}.query(self.querier)
+    }
+    pub fn markets(&self) -> Result<MarketsResponse, cosmwasm_std::StdError> {
+        MarketsRequest {}.query(self.querier)
     }
     pub fn market(
         &self,
