@@ -282,6 +282,8 @@ pub struct DepositOptions {
     pub disable_autoswap: bool,
     #[prost(bool, tag = "2")]
     pub fail_tx_on_bel: bool,
+    #[prost(bool, tag = "3")]
+    pub swap_on_deposit: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
