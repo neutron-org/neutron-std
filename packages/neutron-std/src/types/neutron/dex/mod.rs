@@ -264,6 +264,10 @@ pub struct Params {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub good_til_purge_allowance: u64,
+    /// Whitelisted_lps have special LP privileges;
+    /// currently, the only such privilege is depositing outside of the allowed fee_tiers.
+    #[prost(string, repeated, tag = "6")]
+    pub whitelisted_lps: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
