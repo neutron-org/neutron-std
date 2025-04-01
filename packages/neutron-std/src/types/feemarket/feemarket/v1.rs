@@ -75,6 +75,10 @@ pub struct Params {
     /// distributed to all stakers.
     #[prost(bool, tag = "12")]
     pub distribute_fees: bool,
+    /// SendTipToProposer is a boolean that determines whether the tip is sent to a
+    /// proposer or to a module account.
+    #[prost(bool, tag = "13")]
+    pub send_tip_to_proposer: bool,
 }
 /// GenesisState defines the feemarket module's genesis state.
 #[allow(clippy::derive_partial_eq_without_eq)]

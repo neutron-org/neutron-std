@@ -286,6 +286,14 @@ pub struct DepositOptions {
     pub disable_autoswap: bool,
     #[prost(bool, tag = "2")]
     pub fail_tx_on_bel: bool,
+    #[prost(bool, tag = "3")]
+    pub swap_on_deposit: bool,
+    #[prost(uint64, tag = "4")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub swap_on_deposit_slop_tolerance_bps: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
