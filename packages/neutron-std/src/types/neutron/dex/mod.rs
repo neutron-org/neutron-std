@@ -264,6 +264,10 @@ pub struct Params {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub good_til_purge_allowance: u64,
+    /// Whitelisted_lps have special LP privileges;
+    /// currently, the only such privilege is depositing outside of the allowed fee_tiers.
+    #[prost(string, repeated, tag = "6")]
+    pub whitelisted_lps: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -282,6 +286,14 @@ pub struct DepositOptions {
     pub disable_autoswap: bool,
     #[prost(bool, tag = "2")]
     pub fail_tx_on_bel: bool,
+    #[prost(bool, tag = "3")]
+    pub swap_on_deposit: bool,
+    #[prost(uint64, tag = "4")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub swap_on_deposit_slop_tolerance_bps: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
