@@ -199,7 +199,7 @@ pub struct QueryDenomsFromCreatorRequest {
     #[prost(string, tag = "1")]
     pub creator: ::prost::alloc::string::String,
 }
-/// QueryDenomsFromCreatorRequest defines the response structure for the
+/// QueryDenomsFromCreatorResponse defines the response structure for the
 /// DenomsFromCreator gRPC query.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
