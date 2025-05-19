@@ -633,7 +633,7 @@ pub struct MsgMultiHopSwap {
     #[prost(string, tag = "5")]
     pub exit_limit_price: ::prost::alloc::string::String,
     /// If pickBestRoute == true then all routes are run and the route with the
-    /// best price is chosen otherwise, the first succesful route is used.
+    /// best price is chosen otherwise, the first successful route is used.
     #[prost(bool, tag = "6")]
     pub pick_best_route: bool,
 }
@@ -1440,7 +1440,7 @@ pub struct QueryEstimateMultiHopSwapRequest {
     #[prost(string, tag = "5")]
     pub exit_limit_price: ::prost::alloc::string::String,
     /// If pickBestRoute == true then all routes are run and the route with the
-    /// best price is chosen otherwise, the first succesful route is used.
+    /// best price is chosen otherwise, the first successful route is used.
     #[prost(bool, tag = "6")]
     pub pick_best_route: bool,
 }
