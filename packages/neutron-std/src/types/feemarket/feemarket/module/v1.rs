@@ -17,4 +17,7 @@ pub struct Module {
     /// governance module.
     #[prost(string, tag = "1")]
     pub authority: ::prost::alloc::string::String,
+    /// FeeRecipientModule defines the custom module account that the fee will be sent to.
+    #[prost(string, tag = "2")]
+    pub fee_recipient_module: ::prost::alloc::string::String,
 }
