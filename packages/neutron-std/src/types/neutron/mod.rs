@@ -10,3 +10,4 @@ pub mod interchainqueries;
 pub mod interchaintxs;
 pub mod revenue;
 pub mod transfer;
+pub mod util;
