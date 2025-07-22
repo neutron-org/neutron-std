@@ -1,5 +1,6 @@
 pub mod contractmanager;
 pub mod cron;
+pub mod crypto;
 pub mod dex;
 pub mod dynamicfees;
 pub mod feeburner;
@@ -9,5 +10,5 @@ pub mod ibcratelimit;
 pub mod interchainqueries;
 pub mod interchaintxs;
 pub mod revenue;
+pub mod state_verifier;
 pub mod transfer;
-pub mod util;
