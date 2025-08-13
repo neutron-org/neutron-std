@@ -1212,7 +1212,7 @@ pub struct MsgStoreAndInstantiateContract {
     /// Admin is an optional address that can execute migrations
     #[prost(string, tag = "6")]
     pub admin: ::prost::alloc::string::String,
-    /// Label is optional metadata to be stored with a constract instance.
+    /// Label is optional metadata to be stored with a contract instance.
     #[prost(string, tag = "7")]
     pub label: ::prost::alloc::string::String,
     /// Msg json encoded message to be passed to the contract on instantiation
@@ -1805,7 +1805,7 @@ pub struct InstantiateContractProposal {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub code_id: u64,
-    /// Label is optional metadata to be stored with a constract instance.
+    /// Label is optional metadata to be stored with a contract instance.
     #[prost(string, tag = "6")]
     pub label: ::prost::alloc::string::String,
     /// Msg json encoded message to be passed to the contract on instantiation
@@ -1843,7 +1843,7 @@ pub struct InstantiateContract2Proposal {
     /// Description is a human readable text
     #[prost(string, tag = "2")]
     pub description: ::prost::alloc::string::String,
-    /// RunAs is the address that is passed to the contract's enviroment as sender
+    /// RunAs is the address that is passed to the contract's environment as sender
     #[prost(string, tag = "3")]
     pub run_as: ::prost::alloc::string::String,
     /// Admin is an optional address that can execute migrations
@@ -1857,7 +1857,7 @@ pub struct InstantiateContract2Proposal {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub code_id: u64,
-    /// Label is optional metadata to be stored with a constract instance.
+    /// Label is optional metadata to be stored with a contract instance.
     #[prost(string, tag = "6")]
     pub label: ::prost::alloc::string::String,
     /// Msg json encode message to be passed to the contract on instantiation
@@ -2227,7 +2227,7 @@ pub struct StoreAndInstantiateContractProposal {
     /// Admin is an optional address that can execute migrations
     #[prost(string, tag = "7")]
     pub admin: ::prost::alloc::string::String,
-    /// Label is optional metadata to be stored with a constract instance.
+    /// Label is optional metadata to be stored with a contract instance.
     #[prost(string, tag = "8")]
     pub label: ::prost::alloc::string::String,
     /// Msg json encoded message to be passed to the contract on instantiation
@@ -2368,7 +2368,7 @@ pub struct QueryContractHistoryResponse {
     response_type = QueryContractsByCodeResponse
 )]
 pub struct QueryContractsByCodeRequest {
-    /// grpc-gateway_out does not support Go style CodID
+    /// grpc-gateway_out does not support Go style CodeID
     #[prost(uint64, tag = "1")]
     #[serde(alias = "codeID")]
     #[serde(
@@ -2573,7 +2573,7 @@ pub struct QuerySmartContractStateResponse {
 #[proto_message(type_url = "/cosmwasm.wasm.v1.QueryCodeRequest")]
 #[proto_query(path = "/cosmwasm.wasm.v1.Query/Code", response_type = QueryCodeResponse)]
 pub struct QueryCodeRequest {
-    /// grpc-gateway_out does not support Go style CodID
+    /// grpc-gateway_out does not support Go style CodeID
     #[prost(uint64, tag = "1")]
     #[serde(alias = "codeID")]
     #[serde(
@@ -2581,6 +2581,65 @@ pub struct QueryCodeRequest {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub code_id: u64,
+}
+/// QueryCodeInfoRequest is the request type for the Query/CodeInfo RPC method
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/cosmwasm.wasm.v1.QueryCodeInfoRequest")]
+#[proto_query(
+    path = "/cosmwasm.wasm.v1.Query/CodeInfo",
+    response_type = QueryCodeInfoResponse
+)]
+pub struct QueryCodeInfoRequest {
+    /// grpc-gateway_out does not support Go style CodeID
+    #[prost(uint64, tag = "1")]
+    #[serde(alias = "codeID")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub code_id: u64,
+}
+/// QueryCodeInfoResponse is the response type for the Query/CodeInfo RPC method
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/cosmwasm.wasm.v1.QueryCodeInfoResponse")]
+pub struct QueryCodeInfoResponse {
+    #[prost(uint64, tag = "1")]
+    #[serde(alias = "codeID")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub code_id: u64,
+    #[prost(string, tag = "2")]
+    pub creator: ::prost::alloc::string::String,
+    #[prost(bytes = "vec", tag = "3")]
+    #[serde(
+        serialize_with = "crate::serde::as_base64_encoded_string::serialize",
+        deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
+    )]
+    pub checksum: ::prost::alloc::vec::Vec<u8>,
+    #[prost(message, optional, tag = "4")]
+    pub instantiate_permission: ::core::option::Option<AccessConfig>,
 }
 /// CodeInfoResponse contains code meta data from CodeInfo
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -2819,6 +2878,44 @@ pub struct QueryContractsByCreatorResponse {
     pub pagination:
         ::core::option::Option<super::super::super::cosmos::base::query::v1beta1::PageResponse>,
 }
+/// QueryWasmLimitsConfigRequest is the request type for the
+/// Query/WasmLimitsConfig RPC method.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/cosmwasm.wasm.v1.QueryWasmLimitsConfigRequest")]
+#[proto_query(
+    path = "/cosmwasm.wasm.v1.Query/WasmLimitsConfig",
+    response_type = QueryWasmLimitsConfigResponse
+)]
+pub struct QueryWasmLimitsConfigRequest {}
+/// QueryWasmLimitsConfigResponse is the response type for the
+/// Query/WasmLimitsConfig RPC method. It contains the JSON encoded limits for
+/// static validation of Wasm files.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
+#[proto_message(type_url = "/cosmwasm.wasm.v1.QueryWasmLimitsConfigResponse")]
+pub struct QueryWasmLimitsConfigResponse {
+    #[prost(string, tag = "1")]
+    pub config: ::prost::alloc::string::String,
+}
 /// QueryBuildAddressRequest is the request type for the Query/BuildAddress RPC
 /// method.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -2960,6 +3057,9 @@ impl<'a, Q: cosmwasm_std::CustomQuery> WasmQuerier<'a, Q> {
     ) -> Result<QueryCodesResponse, cosmwasm_std::StdError> {
         QueryCodesRequest { pagination }.query(self.querier)
     }
+    pub fn code_info(&self, code_id: u64) -> Result<QueryCodeInfoResponse, cosmwasm_std::StdError> {
+        QueryCodeInfoRequest { code_id }.query(self.querier)
+    }
     pub fn pinned_codes(
         &self,
         pagination: ::core::option::Option<
@@ -2983,6 +3083,11 @@ impl<'a, Q: cosmwasm_std::CustomQuery> WasmQuerier<'a, Q> {
             pagination,
         }
         .query(self.querier)
+    }
+    pub fn wasm_limits_config(
+        &self,
+    ) -> Result<QueryWasmLimitsConfigResponse, cosmwasm_std::StdError> {
+        QueryWasmLimitsConfigRequest {}.query(self.querier)
     }
     pub fn build_address(
         &self,
