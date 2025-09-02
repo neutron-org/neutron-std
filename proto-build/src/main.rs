@@ -17,18 +17,17 @@ const COMETBFT_REPO: &str = "https://github.com/cometbft/cometbft.git";
 const IBC_GO_REPO: &str = "https://github.com/cosmos/ibc-go.git";
 const ICS23_REPO: &str = "https://github.com/cosmos/ics23.git";
 const FEEMARKET_REPO: &str = "https://github.com/neutron-org/feemarket.git";
-const SLINKY_REPO: &str = "https://github.com/skip-mev/slinky.git";
-const INTERCHAIN_SECURITY_REPO: &str = "https://github.com/cosmos/interchain-security.git";
+const SLINKY_REPO: &str = "https://github.com/neutron-org/connect.git";
 const ADMIN_MODULE_REPO: &str = "https://github.com/neutron-org/admin-module.git";
 
 /// The Cosmos SDK commit or tag to be cloned and used to build the proto files
 const COSMOS_SDK_REV: &str = "v0.50.13-neutron";
 
 /// The Neutron commit or tag to be cloned and used to build the proto files
-const NEUTRON_REV: &str = "09082cfc7a07a22218494277d68f30b7dd884a58";
+const NEUTRON_REV: &str = "v8.0.0-rc0";
 
 /// The wasmd commit or tag to be cloned and used to build the proto files
-const WASMD_REV: &str = "8ab684b5eff649e2e335a6e1b439ae8b72afd392";
+const WASMD_REV: &str = "v0.54.1-neutron";
 
 /// The cometbft commit or tag to be cloned and used to build the proto files
 const COMETBFT_REV: &str = "v0.38.17";
@@ -41,11 +40,9 @@ const ICS23_REV: &str = "go/v0.11.0";
 
 const FEEMARKET_REV: &str = "4ffcf3d434644a5499fff5a81d16ebea62e9eac1";
 
-const SLINKY_REV: &str = "v1.2.0";
+const SLINKY_REV: &str = "v1.2.1";
 
 const ADMIN_MODULE_REV: &str = "v2.0.2";
-
-const INTERCHAIN_SECURITY_REV: &str = "v5.1.1";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
@@ -65,9 +62,7 @@ const ICS23_DIR: &str = "../dependencies/ics23/";
 /// Directory where the feemarket repo is located
 const FEEMARKET_DIR: &str = "../dependencies/feemarket/";
 /// Directory where the slinky repo is located
-const SLINKY_DIR: &str = "../dependencies/slinky/";
-/// Directory where the interchain-security repo is located
-const INTERCHAIN_SECURITY_DIR: &str = "../dependencies/interchain-security/";
+const SLINKY_DIR: &str = "../dependencies/connect/";
 /// Directory where the admin-module repo is located
 const ADMIN_MODULE_DIR: &str = "../dependencies/admin-module/";
 
@@ -92,11 +87,6 @@ pub fn generate() {
     git::clone_repo(ICS23_REPO, ICS23_DIR, ICS23_REV);
     git::clone_repo(FEEMARKET_REPO, FEEMARKET_DIR, FEEMARKET_REV);
     git::clone_repo(SLINKY_REPO, SLINKY_DIR, SLINKY_REV);
-    git::clone_repo(
-        INTERCHAIN_SECURITY_REPO,
-        INTERCHAIN_SECURITY_DIR,
-        INTERCHAIN_SECURITY_REV,
-    );
     git::clone_repo(ADMIN_MODULE_REPO, ADMIN_MODULE_DIR, ADMIN_MODULE_REV);
 
     let tmp_build_dir: PathBuf = TMP_BUILD_DIR.parse().unwrap();
@@ -158,13 +148,6 @@ pub fn generate() {
         exclude_mods: vec![],
     };
 
-    let interchain_security_project = CosmosProject {
-        name: "interchain-security".to_string(),
-        version: INTERCHAIN_SECURITY_REV.to_string(),
-        project_dir: INTERCHAIN_SECURITY_DIR.to_string(),
-        exclude_mods: vec![],
-    };
-
     let admin_project = CosmosProject {
         name: "admin".to_string(),
         version: ADMIN_MODULE_REV.to_string(),
@@ -184,7 +167,6 @@ pub fn generate() {
             ics23_project,
             feemarket_project,
             slinky_project,
-            interchain_security_project,
             admin_project,
         ],
     );
