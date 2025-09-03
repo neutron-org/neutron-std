@@ -26,6 +26,7 @@ tendermint-proto = { workspace = true }
 speedate = { workspace = true }
 chrono = { version = "0.4.22", default-features = false }
 neutron-std-derive = { version = "0.20.1", path = "../neutron-std-derive" }
+ed25519-zebra                      = { version = "=4.0.3", default-features = false }
 
 [dev-dependencies]
 base64 = { workspace = true }

@@ -1156,6 +1156,7 @@ dependencies = [
  "cosmos-sdk-proto",
  "cosmwasm-schema",
  "cosmwasm-std",
+ "ed25519-zebra",
  "hex",
  "neutron-std-derive",
  "prost",
