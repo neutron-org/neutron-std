@@ -71,7 +71,9 @@ impl PrecDec {
     /// ## Examples
     ///
     /// ```
-    /// # use std::str::FromStr;
+    /// # use std::str::FromStr;    ///
+    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    ///
     /// const HALF: PrecDec = PrecDec::percent(50);
     ///
     /// assert_eq!(HALF, PrecDec::from_str("0.5").unwrap());
@@ -87,7 +89,9 @@ impl PrecDec {
     /// ## Examples
     ///
     /// ```
-    /// # use std::str::FromStr;
+    /// # use std::str::FromStr;    ///
+    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    ///
     /// const HALF: PrecDec = PrecDec::permille(500);
     ///
     /// assert_eq!(HALF, PrecDec::from_str("0.5").unwrap());
@@ -104,7 +108,9 @@ impl PrecDec {
     /// ## Examples
     ///
     /// ```
-    /// # use std::str::FromStr;
+    /// # use std::str::FromStr;    ///
+    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    ///
     /// const TWO_BPS: PrecDec = PrecDec::bps(2);
     /// const HALF: PrecDec = PrecDec::bps(5000);
     ///
@@ -128,6 +134,7 @@ impl PrecDec {
     ///
     /// ```
     /// # use cosmwasm_std::{Uint128};
+    /// use neutron_std::types::neutron::util::precdec::PrecDec;
     /// let a = PrecDec::from_atomics(Uint128::new(1234), 3).unwrap();
     /// assert_eq!(a.to_string(), "1.234");
     ///
@@ -209,17 +216,18 @@ impl PrecDec {
     /// ## Examples
     ///
     /// ```
-    /// # use cosmwasm_std::{Uint128};
+    /// # use cosmwasm_std::{Uint128, Uint256};
     /// # use core::str::FromStr;
+    /// use neutron_std::types::neutron::util::precdec::PrecDec;
     /// // Value with whole and fractional part
     /// let a = PrecDec::from_str("1.234").unwrap();
-    /// assert_eq!(a.decimal_places(), 18);
-    /// assert_eq!(a.atomics(), Uint128::new(1234000000000000000));
+    /// assert_eq!(a.decimal_places(), 27);
+    /// assert_eq!(a.atomics(), Uint256::from_u128(1234000000000000000000000000));
     ///
     /// // Smallest possible value
-    /// let b = PrecDec::from_str("0.000000000000000001").unwrap();
-    /// assert_eq!(b.decimal_places(), 18);
-    /// assert_eq!(b.atomics(), Uint128::new(1));
+    /// let b = PrecDec::from_str("0.000000000000000000000000001").unwrap();
+    /// assert_eq!(b.decimal_places(), 27);
+    /// assert_eq!(b.atomics(), Uint256::from_u128(1));
     /// ```
     #[must_use]
     #[inline]
@@ -365,7 +373,6 @@ impl PrecDec {
     fn sqrt_with_precision(&self, precision: u32) -> Option<Self> {
         let inner_mul = Uint256::from(10u128).pow(precision * 2 + 1);
         self.0.checked_mul(inner_mul).ok().map(|inner| {
-            let sq = inner.isqrt();
             let outer_mul = Uint256::from(10u128).pow(Self::DECIMAL_PLACES / 2 - precision);
             Self(inner.isqrt().checked_mul(outer_mul).unwrap())
         })
@@ -415,16 +422,17 @@ impl PrecDec {
     ///
     /// ```
     /// use core::str::FromStr;
-    /// use cosmwasm_std::{Uint128};
+    /// use cosmwasm_std::{Uint128, Uint256};
+    /// use neutron_std::types::neutron::util::precdec::PrecDec;
     ///
     /// let d = PrecDec::from_str("12.345").unwrap();
-    /// assert_eq!(d.to_uint_floor(), Uint128::new(12));
+    /// assert_eq!(d.to_uint_floor(), Uint256::from_u128(12));
     ///
     /// let d = PrecDec::from_str("12.999").unwrap();
-    /// assert_eq!(d.to_uint_floor(), Uint128::new(12));
+    /// assert_eq!(d.to_uint_floor(), Uint256::from_u128(12));
     ///
     /// let d = PrecDec::from_str("75.0").unwrap();
-    /// assert_eq!(d.to_uint_floor(), Uint128::new(75));
+    /// assert_eq!(d.to_uint_floor(), Uint256::from_u128(75));
     /// ```
     #[must_use = "this returns the result of the operation, without modifying the original"]
     pub fn to_uint_floor(self) -> Uint256 {
@@ -438,16 +446,17 @@ impl PrecDec {
     ///
     /// ```
     /// use core::str::FromStr;
-    /// use cosmwasm_std::{Uint128};
+    /// use cosmwasm_std::{Uint128, Uint256};
+    /// use neutron_std::types::neutron::util::precdec::PrecDec;
     ///
     /// let d = PrecDec::from_str("12.345").unwrap();
-    /// assert_eq!(d.to_uint_ceil(), Uint128::new(13));
+    /// assert_eq!(d.to_uint_ceil(), Uint256::from_u128(13));
     ///
     /// let d = PrecDec::from_str("12.999").unwrap();
-    /// assert_eq!(d.to_uint_ceil(), Uint128::new(13));
+    /// assert_eq!(d.to_uint_ceil(), Uint256::from_u128(13));
     ///
     /// let d = PrecDec::from_str("75.0").unwrap();
-    /// assert_eq!(d.to_uint_ceil(), Uint128::new(75));
+    /// assert_eq!(d.to_uint_ceil(), Uint256::from_u128(75));
     /// ```
     #[must_use = "this returns the result of the operation, without modifying the original"]
     pub fn to_uint_ceil(self) -> Uint256 {
