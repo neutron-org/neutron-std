@@ -63,8 +63,6 @@ const ICS23_DIR: &str = "../dependencies/ics23/";
 const FEEMARKET_DIR: &str = "../dependencies/feemarket/";
 /// Directory where the slinky repo is located
 const SLINKY_DIR: &str = "../dependencies/slinky/";
-/// Directory where the interchain-security repo is located
-const INTERCHAIN_SECURITY_DIR: &str = "../dependencies/interchain-security/";
 /// Directory where the admin-module repo is located
 const ADMIN_MODULE_DIR: &str = "../dependencies/admin-module/";
 
