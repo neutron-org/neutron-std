@@ -471,6 +471,26 @@ pub struct MsgWithdrawal {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
+#[proto_message(type_url = "/neutron.dex.MsgWithdrawalWithShares")]
+pub struct MsgWithdrawalWithShares {
+    #[prost(string, tag = "1")]
+    pub creator: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub receiver: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "3")]
+    pub shares_to_remove: ::prost::alloc::vec::Vec<super::super::cosmos::base::v1beta1::Coin>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
 #[proto_message(type_url = "/neutron.dex.MsgWithdrawalResponse")]
 pub struct MsgWithdrawalResponse {
     /// reserve0_withdrawn is DEPRECATED
@@ -1832,6 +1852,26 @@ pub struct QuerySimulateWithdrawalRequest {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
+#[proto_message(type_url = "/neutron.dex.QuerySimulateWithdrawalWithSharesRequest")]
+#[proto_query(
+    path = "/neutron.dex.Query/SimulateWithdrawalWithShares",
+    response_type = QuerySimulateWithdrawalResponse
+)]
+pub struct QuerySimulateWithdrawalWithSharesRequest {
+    #[prost(message, optional, tag = "1")]
+    pub msg: ::core::option::Option<MsgWithdrawalWithShares>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
 #[proto_message(type_url = "/neutron.dex.QuerySimulateWithdrawalResponse")]
 pub struct QuerySimulateWithdrawalResponse {
     #[prost(message, optional, tag = "1")]
@@ -2210,6 +2250,12 @@ impl<'a, Q: cosmwasm_std::CustomQuery> DexQuerier<'a, Q> {
         msg: ::core::option::Option<MsgWithdrawal>,
     ) -> Result<QuerySimulateWithdrawalResponse, cosmwasm_std::StdError> {
         QuerySimulateWithdrawalRequest { msg }.query(self.querier)
+    }
+    pub fn simulate_withdrawal_with_shares(
+        &self,
+        msg: ::core::option::Option<MsgWithdrawalWithShares>,
+    ) -> Result<QuerySimulateWithdrawalResponse, cosmwasm_std::StdError> {
+        QuerySimulateWithdrawalWithSharesRequest { msg }.query(self.querier)
     }
     pub fn simulate_place_limit_order(
         &self,
