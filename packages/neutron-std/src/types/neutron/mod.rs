@@ -1,3 +1,4 @@
+pub mod coinfactory;
 pub mod contractmanager;
 pub mod cron;
 pub mod crypto;
@@ -12,4 +13,3 @@ pub mod interchaintxs;
 pub mod revenue;
 pub mod state_verifier;
 pub mod transfer;
-pub mod util;
