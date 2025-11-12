@@ -307,7 +307,7 @@ pub struct QueryFullDenomResponse {
 /// must be unique and cannot be re-used.
 ///
 /// The resulting denom created is defined as
-/// <factory/{creatorAddress}/{subdenom}>. The resulting denom's admin is
+/// <factory.{creatorAddress}.{subdenom}>. The resulting denom's admin is
 /// originally set to be the creator, but this can be changed later. The token
 /// denom does not indicate the current admin.
 #[allow(clippy::derive_partial_eq_without_eq)]
