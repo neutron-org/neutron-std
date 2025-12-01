@@ -96,7 +96,11 @@ pub fn generate() {
         name: "cosmos".to_string(),
         version: COSMOS_SDK_REV.to_string(),
         project_dir: COSMOS_SDK_DIR.to_string(),
-        exclude_mods: vec!["reflection".to_string(), "autocli".to_string()],
+        exclude_mods: vec![
+            "reflection".to_string(),
+            "autocli".to_string(),
+            "benchmark".to_string(),
+        ],
     };
 
     let neutron_project = CosmosProject {
