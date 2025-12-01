@@ -17,32 +17,32 @@ const COMETBFT_REPO: &str = "https://github.com/cometbft/cometbft.git";
 const IBC_GO_REPO: &str = "https://github.com/cosmos/ibc-go.git";
 const ICS23_REPO: &str = "https://github.com/cosmos/ics23.git";
 const FEEMARKET_REPO: &str = "https://github.com/neutron-org/feemarket.git";
-const SLINKY_REPO: &str = "https://github.com/skip-mev/slinky.git";
+const SLINKY_REPO: &str = "https://github.com/neutron-org/connect.git";
 const ADMIN_MODULE_REPO: &str = "https://github.com/neutron-org/admin-module.git";
 
 /// The Cosmos SDK commit or tag to be cloned and used to build the proto files
-const COSMOS_SDK_REV: &str = "v0.50.13-neutron";
+const COSMOS_SDK_REV: &str = "releases/v0.53.x";
 
 /// The Neutron commit or tag to be cloned and used to build the proto files
-const NEUTRON_REV: &str = "v9.0.0";
+const NEUTRON_REV: &str = "feat/cosmos-sdk-53";
 
 /// The wasmd commit or tag to be cloned and used to build the proto files
-const WASMD_REV: &str = "v0.54.1-neutron";
+const WASMD_REV: &str = "releases/v0.61.x";
 
 /// The cometbft commit or tag to be cloned and used to build the proto files
 const COMETBFT_REV: &str = "v0.38.17";
 
 /// The ibc-go commit or tag to be cloned and used to build the proto files
-const IBC_GO_REV: &str = "v8.7.0";
+const IBC_GO_REV: &str = "v10.4.0";
 
 /// The ics23 commit or tag to be cloned and used to build the proto files
 const ICS23_REV: &str = "go/v0.11.0";
 
 const FEEMARKET_REV: &str = "4ffcf3d434644a5499fff5a81d16ebea62e9eac1";
 
-const SLINKY_REV: &str = "v1.2.0";
+const SLINKY_REV: &str = "a8d5fb6bd481aa7f3dfdb8a9800e5b7b624abaf2";
 
-const ADMIN_MODULE_REV: &str = "v2.0.3";
+const ADMIN_MODULE_REV: &str = "6a701ce2d335";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.

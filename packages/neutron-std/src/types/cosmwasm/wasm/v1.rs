@@ -135,6 +135,9 @@ pub struct ContractInfo {
     /// persistence model.
     #[prost(message, optional, tag = "7")]
     pub extension: ::core::option::Option<crate::shim::Any>,
+    #[prost(string, tag = "8")]
+    #[serde(alias = "ibc2_portID")]
+    pub ibc2_port_id: ::prost::alloc::string::String,
 }
 /// ContractCodeHistoryEntry metadata to a contract.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -2179,7 +2182,7 @@ pub struct UpdateInstantiateConfigProposal {
     /// Description is a human readable text
     #[prost(string, tag = "2")]
     pub description: ::prost::alloc::string::String,
-    /// AccessConfigUpdate contains the list of code ids and the access config
+    /// AccessConfigUpdates contains the list of code ids and the access config
     /// to be applied.
     #[prost(message, repeated, tag = "3")]
     pub access_config_updates: ::prost::alloc::vec::Vec<AccessConfigUpdate>,
