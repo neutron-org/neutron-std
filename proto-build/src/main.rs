@@ -24,7 +24,7 @@ const ADMIN_MODULE_REPO: &str = "https://github.com/neutron-org/admin-module.git
 const COSMOS_SDK_REV: &str = "releases/v0.53.x";
 
 /// The Neutron commit or tag to be cloned and used to build the proto files
-const NEUTRON_REV: &str = "main";
+const NEUTRON_REV: &str = "feat/cosmos-sdk-53";
 
 /// The wasmd commit or tag to be cloned and used to build the proto files
 const WASMD_REV: &str = "releases/v0.61.x";
@@ -38,11 +38,11 @@ const IBC_GO_REV: &str = "v10.4.0";
 /// The ics23 commit or tag to be cloned and used to build the proto files
 const ICS23_REV: &str = "go/v0.11.0";
 
-const FEEMARKET_REV: &str = "4ffcf3d434644a5499fff5a81d16ebea62e9eac1";
+const FEEMARKET_REV: &str = "chore/cosmos-sdk-0.53";
 
-const SLINKY_REV: &str = "a8d5fb6bd481aa7f3dfdb8a9800e5b7b624abaf2";
+const SLINKY_REV: &str = "feat/cosmos-sdk-53";
 
-const ADMIN_MODULE_REV: &str = "6a701ce2d335";
+const ADMIN_MODULE_REV: &str = "chore/cosmos-sdk-0.53";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
