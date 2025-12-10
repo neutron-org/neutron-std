@@ -5,6 +5,5 @@ pub mod gaia;
 pub mod ibc;
 pub mod neutron;
 pub mod osmosis;
-pub mod sidecar;
 pub mod slinky;
 pub mod tendermint;
