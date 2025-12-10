@@ -473,7 +473,7 @@ impl PrecDec {
 
     #[must_use = "converts a PrecDec to a string that can be passed and parsed by Neutron core"]
     pub fn to_prec_dec_string(self) -> String {
-      self.atomics().to_string()
+        self.atomics().to_string()
     }
 }
 
@@ -516,7 +516,7 @@ impl TryFrom<SignedDecimal> for PrecDec {
     type Error = PrecDecRangeExceeded;
 
     fn try_from(value: SignedDecimal) -> Result<Self, Self::Error> {
-       let atomics: Uint256  = value
+        let atomics: Uint256  = value
             .atomics()
             .try_into()
             .map_err(|_| PrecDecRangeExceeded)?;
@@ -2214,8 +2214,8 @@ mod tests {
             ("0.5", "0.51", false),
             ("0", "0.00000", true),
         ]
-        .into_iter()
-        .map(|(lhs, rhs, expected)| (dec(lhs), dec(rhs), expected));
+            .into_iter()
+            .map(|(lhs, rhs, expected)| (dec(lhs), dec(rhs), expected));
 
         #[allow(clippy::op_ref)]
         for (lhs, rhs, expected) in test_cases {
