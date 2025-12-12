@@ -9,6 +9,8 @@ pub const NEUTROND_VERSION: &str = include_str!("types/NEUTRON_COMMIT");
 mod serde;
 pub mod shim;
 
+pub mod util;
+
 #[allow(deprecated)]
 pub mod types;
 
