@@ -84,7 +84,6 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
     (quote! {
         impl #ident {
             pub const TYPE_URL: &'static str = #type_url;
-            
             #path_token
 
             #cosmwasm_query
