@@ -526,7 +526,7 @@ fn get_query_attr(
 
     let method = service?.method.iter().find(|m| {
         let input_type = m.input_type.clone().unwrap();
-        let input_type = input_type.split('.').last().unwrap();
+        let input_type = input_type.split('.').next_back().unwrap();
         *ident == input_type.to_upper_camel_case()
     });
 
