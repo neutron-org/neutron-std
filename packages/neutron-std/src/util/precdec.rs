@@ -1165,7 +1165,6 @@ mod tests {
             "115792089237316195423570985008687907853269984665640564039457.584007913129639936",
         )
         .unwrap_err();
-        // In CosmWasm v3.0, the error message format changed
         assert!(err.to_string().contains("Overflow") || err.to_string().contains("Cannot Add"));
     }
 
