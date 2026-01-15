@@ -4,9 +4,7 @@ use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, 
 use core::str::FromStr;
 use serde::{de, ser, Deserialize, Deserializer, Serialize};
 
-use crate::util::forward_ref::{
-    forward_ref_binop, forward_ref_op_assign, forward_ref_partial_eq,
-};
+use crate::util::forward_ref::{forward_ref_binop, forward_ref_op_assign, forward_ref_partial_eq};
 use cosmwasm_std::{
     CheckedFromRatioError, CheckedMultiplyRatioError, DivideByZeroError, OverflowError,
     OverflowOperation, RoundUpOverflowError, StdError,
@@ -28,9 +26,8 @@ forward_ref_partial_eq!(PrecDec, PrecDec);
 pub struct PrecDecRangeExceeded;
 
 impl PrecDec {
-    const DECIMAL_FRACTIONAL: Uint256 =
-        Uint256::new(1_000_000_000_000_000_000_000_000_000u128); // 10**27
-                                                                       // const DECIMAL_FRACTIONAL_SQUARED: Uint256 = Uint256::from_uint128(1_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000u128); // (1*10**18)**2 = 1*10**54
+    const DECIMAL_FRACTIONAL: Uint256 = Uint256::new(1_000_000_000_000_000_000_000_000_000u128); // 10**27
+                                                                                                 // const DECIMAL_FRACTIONAL_SQUARED: Uint256 = Uint256::from_uint128(1_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000u128); // (1*10**18)**2 = 1*10**54
 
     /// The number of decimal places. Since decimal types are fixed-point rather than
     /// floating-point, this is a constant.
@@ -1130,11 +1127,15 @@ mod tests {
     #[test]
     fn precdec_from_str_errors_for_more_than_27_fractional_digits() {
         let err = PrecDec::from_str("7.1234567890123456789123456789").unwrap_err();
-        assert!(err.to_string().contains("Cannot parse more than 27 fractional digits"));
+        assert!(err
+            .to_string()
+            .contains("Cannot parse more than 27 fractional digits"));
 
         // No special rules for trailing zeros. This could be changed but adds gas cost for the happy path.
         let err = PrecDec::from_str("7.1230000000000000000000000000").unwrap_err();
-        assert!(err.to_string().contains("Cannot parse more than 27 fractional digits"));
+        assert!(err
+            .to_string()
+            .contains("Cannot parse more than 27 fractional digits"));
     }
 
     #[test]
@@ -1149,13 +1150,15 @@ mod tests {
     #[test]
     fn precdec_from_str_errors_for_more_than_max_value() {
         // Integer
-        let err = PrecDec::from_str("34028236692099999999999999999999999999999999999999999938463464")
-            .unwrap_err();
+        let err =
+            PrecDec::from_str("34028236692099999999999999999999999999999999999999999938463464")
+                .unwrap_err();
         assert!(err.to_string().contains("Value too big"));
 
         // Decimal
-        let err = PrecDec::from_str("115792089237316195423570985008687907853269984665640564039458.0")
-            .unwrap_err();
+        let err =
+            PrecDec::from_str("115792089237316195423570985008687907853269984665640564039458.0")
+                .unwrap_err();
         assert!(err.to_string().contains("Value too big"));
 
         let err = Decimal256::from_str(
@@ -1175,18 +1178,9 @@ mod tests {
         let max = PrecDec::MAX;
 
         assert_eq!(zero.atomics(), Uint256::new(0));
-        assert_eq!(
-            one.atomics(),
-            Uint256::new(1000000000000000000000000000)
-        );
-        assert_eq!(
-            half.atomics(),
-            Uint256::new(500000000000000000000000000)
-        );
-        assert_eq!(
-            two.atomics(),
-            Uint256::new(2000000000000000000000000000)
-        );
+        assert_eq!(one.atomics(), Uint256::new(1000000000000000000000000000));
+        assert_eq!(half.atomics(), Uint256::new(500000000000000000000000000));
+        assert_eq!(two.atomics(), Uint256::new(2000000000000000000000000000));
         assert_eq!(max.atomics(), Uint256::MAX);
     }
 
