@@ -80,6 +80,8 @@ pub struct PoolReservesKey {
 pub struct PoolReserves {
     #[prost(message, optional, tag = "1")]
     pub key: ::core::option::Option<PoolReservesKey>,
+    /// DEPRECATED: reserves_maker_denom will be removed in future release, `dec_reserves_maker_denom` should always be used.
+    #[deprecated]
     #[prost(string, tag = "2")]
     pub reserves_maker_denom: ::prost::alloc::string::String,
     /// DEPRECATED: price_taker_to_maker will be removed in future release, `maker_price` should always be used.
@@ -94,6 +96,8 @@ pub struct PoolReserves {
     /// This is the price of the PoolReserves denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB )
     #[prost(string, tag = "5")]
     pub maker_price: ::prost::alloc::string::String,
+    #[prost(string, tag = "6")]
+    pub dec_reserves_maker_denom: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -208,13 +212,20 @@ pub struct LimitOrderTrancheKey {
 pub struct LimitOrderTranche {
     #[prost(message, optional, tag = "1")]
     pub key: ::core::option::Option<LimitOrderTrancheKey>,
+    /// DEPRECATED: reserves_maker_denom will be removed in future release, `dec_reserves_maker_denom` should always be used.
+    #[deprecated]
     #[prost(string, tag = "2")]
     pub reserves_maker_denom: ::prost::alloc::string::String,
+    /// DEPRECATED: reserves_taker_denom will be removed in future release, `dec_reserves_taker_denom` should always be used.
+    #[deprecated]
     #[prost(string, tag = "3")]
     pub reserves_taker_denom: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
     pub total_maker_denom: ::prost::alloc::string::String,
+    /// DEPRECATED: total_taker_denom will be removed in future release, `dec_total_taker_denom` should always be used.
+    ///
     /// LimitOrders with expiration_time set are valid as long as blockTime <= expiration_time
+    #[deprecated]
     #[prost(string, tag = "5")]
     pub total_taker_denom: ::prost::alloc::string::String,
     /// JIT orders also use expiration_time to handle deletion but represent a special case
@@ -229,6 +240,12 @@ pub struct LimitOrderTranche {
     /// This is the price of the LimitOrder denominated in the opposite token. (ie. 1 TokenA with a maker_price of 10 is worth 10 TokenB )
     #[prost(string, tag = "8")]
     pub maker_price: ::prost::alloc::string::String,
+    #[prost(string, tag = "9")]
+    pub dec_reserves_maker_denom: ::prost::alloc::string::String,
+    #[prost(string, tag = "10")]
+    pub dec_reserves_taker_denom: ::prost::alloc::string::String,
+    #[prost(string, tag = "11")]
+    pub dec_total_taker_denom: ::prost::alloc::string::String,
 }
 /// Params defines the parameters for the module.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -280,6 +297,24 @@ pub struct Params {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
+#[proto_message(type_url = "/neutron.dex.PrecDecCoin")]
+pub struct PrecDecCoin {
+    #[prost(string, tag = "1")]
+    pub denom: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub amount: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
 #[proto_message(type_url = "/neutron.dex.DepositOptions")]
 pub struct DepositOptions {
     #[prost(bool, tag = "1")]
@@ -288,6 +323,7 @@ pub struct DepositOptions {
     pub fail_tx_on_bel: bool,
     #[prost(bool, tag = "3")]
     pub swap_on_deposit: bool,
+    #[deprecated]
     #[prost(uint64, tag = "4")]
     #[serde(
         serialize_with = "crate::serde::as_str::serialize",
@@ -371,14 +407,22 @@ pub struct FailedDeposit {
 )]
 #[proto_message(type_url = "/neutron.dex.MsgDepositResponse")]
 pub struct MsgDepositResponse {
+    /// reserve0_deposited is DEPRECATED
+    #[deprecated]
     #[prost(string, repeated, tag = "1")]
     pub reserve0_deposited: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// reserve0_deposited is DEPRECATED
+    #[deprecated]
     #[prost(string, repeated, tag = "2")]
     pub reserve1_deposited: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(message, repeated, tag = "3")]
     pub failed_deposits: ::prost::alloc::vec::Vec<FailedDeposit>,
     #[prost(message, repeated, tag = "4")]
     pub shares_issued: ::prost::alloc::vec::Vec<super::super::cosmos::base::v1beta1::Coin>,
+    #[prost(string, repeated, tag = "5")]
+    pub dec_reserve0_deposited: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "6")]
+    pub dec_reserve1_deposited: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -427,14 +471,42 @@ pub struct MsgWithdrawal {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
+#[proto_message(type_url = "/neutron.dex.MsgWithdrawalWithShares")]
+pub struct MsgWithdrawalWithShares {
+    #[prost(string, tag = "1")]
+    pub creator: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub receiver: ::prost::alloc::string::String,
+    #[prost(message, repeated, tag = "3")]
+    pub shares_to_remove: ::prost::alloc::vec::Vec<super::super::cosmos::base::v1beta1::Coin>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
 #[proto_message(type_url = "/neutron.dex.MsgWithdrawalResponse")]
 pub struct MsgWithdrawalResponse {
+    /// reserve0_withdrawn is DEPRECATED
+    #[deprecated]
     #[prost(string, tag = "1")]
     pub reserve0_withdrawn: ::prost::alloc::string::String,
+    /// reserve1_withdrawn is DEPRECATED
+    #[deprecated]
     #[prost(string, tag = "2")]
     pub reserve1_withdrawn: ::prost::alloc::string::String,
     #[prost(message, repeated, tag = "3")]
     pub shares_burned: ::prost::alloc::vec::Vec<super::super::cosmos::base::v1beta1::Coin>,
+    #[prost(string, tag = "4")]
+    pub dec_reserve0_withdrawn: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub dec_reserve1_withdrawn: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -482,9 +554,8 @@ pub struct MsgPlaceLimitOrder {
     #[prost(string, tag = "11")]
     #[prost(optional)]
     pub limit_sell_price: ::core::option::Option<::prost::alloc::string::String>,
-    /// min_average_sell_price is an optional parameter that sets a required minimum average price for the entire trade.
-    /// if the min_average_sell_price is not met the trade will fail.
-    /// If min_average_sell_price is omitted limit_sell_price will be used instead
+    /// min_average_sell_price is DEPRECATED
+    #[deprecated]
     #[prost(string, tag = "12")]
     #[prost(optional)]
     pub min_average_sell_price: ::core::option::Option<::prost::alloc::string::String>,
@@ -507,15 +578,23 @@ pub struct MsgPlaceLimitOrderResponse {
     /// Total amount of coin used for the limit order
     #[prost(message, optional, tag = "2")]
     pub coin_in: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
+    /// taker_coin_out is DEPRECATED
+    #[deprecated]
+    #[prost(message, optional, tag = "3")]
+    pub taker_coin_out: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
+    /// taker_coin_in is DEPRECATED
+    #[deprecated]
+    #[prost(message, optional, tag = "4")]
+    pub taker_coin_in: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
     /// Total amount of coin received from the taker portion of the limit order
     /// This is the amount of coin immediately available in the users account after
     /// executing the limit order. It does not include any future proceeds from the
     /// maker portion which will have withdrawn in the future
-    #[prost(message, optional, tag = "3")]
-    pub taker_coin_out: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
+    #[prost(message, optional, tag = "5")]
+    pub dec_taker_coin_out: ::core::option::Option<PrecDecCoin>,
     /// Total amount of the token in that was immediately swapped for takerOutCoin
-    #[prost(message, optional, tag = "4")]
-    pub taker_coin_in: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
+    #[prost(message, optional, tag = "6")]
+    pub dec_taker_coin_in: ::core::option::Option<PrecDecCoin>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -548,12 +627,20 @@ pub struct MsgWithdrawFilledLimitOrder {
 )]
 #[proto_message(type_url = "/neutron.dex.MsgWithdrawFilledLimitOrderResponse")]
 pub struct MsgWithdrawFilledLimitOrderResponse {
-    /// Total amount of taker reserves that were withdrawn
+    /// taker_coin_out is DEPRECATED
+    #[deprecated]
     #[prost(message, optional, tag = "1")]
     pub taker_coin_out: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
-    /// Total amount of maker reserves that were withdrawn --only applies to inactive LimitOrders
+    /// maker_coin_out is DEPRECATED
+    #[deprecated]
     #[prost(message, optional, tag = "2")]
     pub maker_coin_out: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
+    /// Total amount of taker reserves that were withdrawn
+    #[prost(message, optional, tag = "3")]
+    pub dec_taker_coin_out: ::core::option::Option<PrecDecCoin>,
+    /// Total amount of maker reserves that were withdrawn --only applies to inactive LimitOrders
+    #[prost(message, optional, tag = "4")]
+    pub dec_maker_coin_out: ::core::option::Option<PrecDecCoin>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -586,12 +673,20 @@ pub struct MsgCancelLimitOrder {
 )]
 #[proto_message(type_url = "/neutron.dex.MsgCancelLimitOrderResponse")]
 pub struct MsgCancelLimitOrderResponse {
-    /// Total amount of taker reserves that were withdrawn
+    /// taker_coin_out is DEPRECATED
+    #[deprecated]
     #[prost(message, optional, tag = "1")]
     pub taker_coin_out: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
-    /// Total amount of maker reserves that were canceled
+    /// maker_coin_out is DEPRECATED
+    #[deprecated]
     #[prost(message, optional, tag = "2")]
     pub maker_coin_out: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
+    /// Total amount of taker reserves that were withdrawn
+    #[prost(message, optional, tag = "3")]
+    pub dec_taker_coin_out: ::core::option::Option<PrecDecCoin>,
+    /// Total amount of maker reserves that were canceled
+    #[prost(message, optional, tag = "4")]
+    pub dec_maker_coin_out: ::core::option::Option<PrecDecCoin>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -650,12 +745,20 @@ pub struct MsgMultiHopSwap {
 )]
 #[proto_message(type_url = "/neutron.dex.MsgMultiHopSwapResponse")]
 pub struct MsgMultiHopSwapResponse {
+    /// coin_out is DEPRECATED
+    #[deprecated]
     #[prost(message, optional, tag = "1")]
     pub coin_out: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
     #[prost(message, optional, tag = "2")]
     pub route: ::core::option::Option<MultiHopRoute>,
+    /// dust is DEPRECATED
+    #[deprecated]
     #[prost(message, repeated, tag = "3")]
     pub dust: ::prost::alloc::vec::Vec<super::super::cosmos::base::v1beta1::Coin>,
+    #[prost(message, optional, tag = "4")]
+    pub dec_coin_out: ::core::option::Option<PrecDecCoin>,
+    #[prost(message, repeated, tag = "5")]
+    pub dec_dust: ::prost::alloc::vec::Vec<PrecDecCoin>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -1749,6 +1852,26 @@ pub struct QuerySimulateWithdrawalRequest {
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
+#[proto_message(type_url = "/neutron.dex.QuerySimulateWithdrawalWithSharesRequest")]
+#[proto_query(
+    path = "/neutron.dex.Query/SimulateWithdrawalWithShares",
+    response_type = QuerySimulateWithdrawalResponse
+)]
+pub struct QuerySimulateWithdrawalWithSharesRequest {
+    #[prost(message, optional, tag = "1")]
+    pub msg: ::core::option::Option<MsgWithdrawalWithShares>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    ::prost::Message,
+    ::serde::Serialize,
+    ::serde::Deserialize,
+    ::schemars::JsonSchema,
+    CosmwasmExt,
+)]
 #[proto_message(type_url = "/neutron.dex.QuerySimulateWithdrawalResponse")]
 pub struct QuerySimulateWithdrawalResponse {
     #[prost(message, optional, tag = "1")]
@@ -2127,6 +2250,12 @@ impl<'a, Q: cosmwasm_std::CustomQuery> DexQuerier<'a, Q> {
         msg: ::core::option::Option<MsgWithdrawal>,
     ) -> Result<QuerySimulateWithdrawalResponse, cosmwasm_std::StdError> {
         QuerySimulateWithdrawalRequest { msg }.query(self.querier)
+    }
+    pub fn simulate_withdrawal_with_shares(
+        &self,
+        msg: ::core::option::Option<MsgWithdrawalWithShares>,
+    ) -> Result<QuerySimulateWithdrawalResponse, cosmwasm_std::StdError> {
+        QuerySimulateWithdrawalWithSharesRequest { msg }.query(self.querier)
     }
     pub fn simulate_place_limit_order(
         &self,

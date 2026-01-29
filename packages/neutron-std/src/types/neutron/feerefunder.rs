@@ -65,6 +65,8 @@ pub struct PacketId {
 pub struct Params {
     #[prost(message, optional, tag = "1")]
     pub min_fee: ::core::option::Option<Fee>,
+    #[prost(bool, tag = "2")]
+    pub fee_enabled: bool,
 }
 /// GenesisState defines the fee module's genesis state.
 #[allow(clippy::derive_partial_eq_without_eq)]

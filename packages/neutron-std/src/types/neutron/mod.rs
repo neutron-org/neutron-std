@@ -1,3 +1,4 @@
+pub mod coinfactory;
 pub mod contractmanager;
 pub mod cron;
 pub mod crypto;
