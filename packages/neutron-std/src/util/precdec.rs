@@ -4,17 +4,14 @@ use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, 
 use core::str::FromStr;
 use serde::{de, ser, Deserialize, Deserializer, Serialize};
 
+use crate::util::forward_ref::{forward_ref_binop, forward_ref_op_assign, forward_ref_partial_eq};
 use cosmwasm_std::{
     CheckedFromRatioError, CheckedMultiplyRatioError, DivideByZeroError, OverflowError,
     OverflowOperation, RoundUpOverflowError, StdError,
 };
-use crate::types::neutron::util::forward_ref::{forward_ref_binop, forward_ref_op_assign, forward_ref_partial_eq};
 use cosmwasm_std::{Decimal256, SignedDecimal, SignedDecimal256};
 
 use cosmwasm_std::{Fraction, Isqrt, Uint256, Uint512};
-
-
-
 
 /// A fixed-point decimal value with 27 fractional digits, i.e. Precdec(1_000_000_000_000_000_000) == 1.0
 ///
@@ -29,10 +26,8 @@ forward_ref_partial_eq!(PrecDec, PrecDec);
 pub struct PrecDecRangeExceeded;
 
 impl PrecDec {
-    const DECIMAL_FRACTIONAL: Uint256 = Uint256::from_u128(1_000_000_000_000_000_000_000_000_000u128); // 10**27
-    // const DECIMAL_FRACTIONAL_SQUARED: Uint256 = Uint256::from_uint128(1_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000u128); // (1*10**18)**2 = 1*10**54
-
-
+    const DECIMAL_FRACTIONAL: Uint256 = Uint256::new(1_000_000_000_000_000_000_000_000_000u128); // 10**27
+                                                                                                 // const DECIMAL_FRACTIONAL_SQUARED: Uint256 = Uint256::from_uint128(1_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000_000u128); // (1*10**18)**2 = 1*10**54
 
     /// The number of decimal places. Since decimal types are fixed-point rather than
     /// floating-point, this is a constant.
@@ -51,7 +46,7 @@ impl PrecDec {
     /// Creates a PrecDec(Uint128(value))
     /// This is equivalent to `PrecDec::from_atomics(value, 27)` but usable in a const context.
     pub const fn raw(value: u128) -> Self {
-        Self(Uint256::from_u128(value))
+        Self(Uint256::new(value))
     }
 
     /// Create a 1.0 PrecDec
@@ -72,7 +67,7 @@ impl PrecDec {
     ///
     /// ```
     /// # use std::str::FromStr;    ///
-    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    /// use neutron_std::util::precdec::PrecDec;
     ///
     /// const HALF: PrecDec = PrecDec::percent(50);
     ///
@@ -81,7 +76,7 @@ impl PrecDec {
     pub const fn percent(x: u32) -> Self {
         // multiplication does not overflow since `u32::MAX` * 10**25 is well in u128 range
         let atomics = (x as u128) * 10_000_000_000_000_000_000_000_000;
-        Self(Uint256::from_u128(atomics))
+        Self(Uint256::new(atomics))
     }
 
     /// Convert permille (x/1000) into PrecDec
@@ -90,7 +85,7 @@ impl PrecDec {
     ///
     /// ```
     /// # use std::str::FromStr;    ///
-    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    /// use neutron_std::util::precdec::PrecDec;
     ///
     /// const HALF: PrecDec = PrecDec::permille(500);
     ///
@@ -100,7 +95,7 @@ impl PrecDec {
     pub const fn permille(x: u32) -> Self {
         // multiplication does not overflow since `u32::MAX` * 10**24 is well in u128 range
         let atomics = (x as u128) * 1_000_000_000_000_000_000_000_000;
-        Self(Uint256::from_u128(atomics))
+        Self(Uint256::new(atomics))
     }
 
     /// Convert basis points (x/10000) into PrecDec
@@ -109,7 +104,7 @@ impl PrecDec {
     ///
     /// ```
     /// # use std::str::FromStr;    ///
-    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    /// use neutron_std::util::precdec::PrecDec;
     ///
     /// const TWO_BPS: PrecDec = PrecDec::bps(2);
     /// const HALF: PrecDec = PrecDec::bps(5000);
@@ -121,7 +116,7 @@ impl PrecDec {
     pub const fn bps(x: u32) -> Self {
         // multiplication does not overflow since `u32::MAX` * 10**23 is well in u128 range
         let atomics = (x as u128) * 100_000_000_000_000_000_000_000;
-        Self(Uint256::from_u128(atomics))
+        Self(Uint256::new(atomics))
     }
 
     /// Creates a decimal from a number of atomic units and the number
@@ -134,7 +129,7 @@ impl PrecDec {
     ///
     /// ```
     /// # use cosmwasm_std::{Uint128};
-    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    /// use neutron_std::util::precdec::PrecDec;
     /// let a = PrecDec::from_atomics(Uint128::new(1234), 3).unwrap();
     /// assert_eq!(a.to_string(), "1.234");
     ///
@@ -149,7 +144,7 @@ impl PrecDec {
         decimal_places: u32,
     ) -> Result<Self, PrecDecRangeExceeded> {
         let atomics = atomics.into();
-        const TEN: Uint256 = Uint256::from_u128(10);
+        const TEN: Uint256 = Uint256::new(10);
         Ok(match decimal_places.cmp(&Self::DECIMAL_PLACES) {
             Ordering::Less => {
                 let digits = (Self::DECIMAL_PLACES) - decimal_places; // No overflow because decimal_places < DECIMAL_PLACES
@@ -218,16 +213,16 @@ impl PrecDec {
     /// ```
     /// # use cosmwasm_std::{Uint128, Uint256};
     /// # use core::str::FromStr;
-    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    /// use neutron_std::util::precdec::PrecDec;
     /// // Value with whole and fractional part
     /// let a = PrecDec::from_str("1.234").unwrap();
     /// assert_eq!(a.decimal_places(), 27);
-    /// assert_eq!(a.atomics(), Uint256::from_u128(1234000000000000000000000000));
+    /// assert_eq!(a.atomics(), Uint256::new(1234000000000000000000000000));
     ///
     /// // Smallest possible value
     /// let b = PrecDec::from_str("0.000000000000000000000000001").unwrap();
     /// assert_eq!(b.decimal_places(), 27);
-    /// assert_eq!(b.atomics(), Uint256::from_u128(1));
+    /// assert_eq!(b.atomics(), Uint256::new(1));
     /// ```
     #[must_use]
     #[inline]
@@ -290,7 +285,7 @@ impl PrecDec {
     /// Multiplies one `PrecDec` by another, returning an `OverflowError` if an overflow occurred.
     pub fn checked_mul(self, other: Self) -> Result<Self, OverflowError> {
         let result_as_uint256 = self.numerator().full_mul(other.numerator())
-            / Uint512::from_uint256(Self::DECIMAL_FRACTIONAL) ; // from_uint128 is a const method and should be "free"
+            / Uint512::from_uint256(Self::DECIMAL_FRACTIONAL); // from_uint128 is a const method and should be "free"
         result_as_uint256
             .try_into()
             .map(Self)
@@ -423,16 +418,16 @@ impl PrecDec {
     /// ```
     /// use core::str::FromStr;
     /// use cosmwasm_std::{Uint128, Uint256};
-    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    /// use neutron_std::util::precdec::PrecDec;
     ///
     /// let d = PrecDec::from_str("12.345").unwrap();
-    /// assert_eq!(d.to_uint_floor(), Uint256::from_u128(12));
+    /// assert_eq!(d.to_uint_floor(), Uint256::new(12));
     ///
     /// let d = PrecDec::from_str("12.999").unwrap();
-    /// assert_eq!(d.to_uint_floor(), Uint256::from_u128(12));
+    /// assert_eq!(d.to_uint_floor(), Uint256::new(12));
     ///
     /// let d = PrecDec::from_str("75.0").unwrap();
-    /// assert_eq!(d.to_uint_floor(), Uint256::from_u128(75));
+    /// assert_eq!(d.to_uint_floor(), Uint256::new(75));
     /// ```
     #[must_use = "this returns the result of the operation, without modifying the original"]
     pub fn to_uint_floor(self) -> Uint256 {
@@ -447,16 +442,16 @@ impl PrecDec {
     /// ```
     /// use core::str::FromStr;
     /// use cosmwasm_std::{Uint128, Uint256};
-    /// use neutron_std::types::neutron::util::precdec::PrecDec;
+    /// use neutron_std::util::precdec::PrecDec;
     ///
     /// let d = PrecDec::from_str("12.345").unwrap();
-    /// assert_eq!(d.to_uint_ceil(), Uint256::from_u128(13));
+    /// assert_eq!(d.to_uint_ceil(), Uint256::new(13));
     ///
     /// let d = PrecDec::from_str("12.999").unwrap();
-    /// assert_eq!(d.to_uint_ceil(), Uint256::from_u128(13));
+    /// assert_eq!(d.to_uint_ceil(), Uint256::new(13));
     ///
     /// let d = PrecDec::from_str("75.0").unwrap();
-    /// assert_eq!(d.to_uint_ceil(), Uint256::from_u128(75));
+    /// assert_eq!(d.to_uint_ceil(), Uint256::new(75));
     /// ```
     #[must_use = "this returns the result of the operation, without modifying the original"]
     pub fn to_uint_ceil(self) -> Uint256 {
@@ -473,7 +468,7 @@ impl PrecDec {
 
     #[must_use = "converts a PrecDec to a string that can be passed and parsed by Neutron core"]
     pub fn to_prec_dec_string(self) -> String {
-      self.atomics().to_string()
+        self.atomics().to_string()
     }
 }
 
@@ -495,7 +490,9 @@ impl Fraction<Uint256> for PrecDec {
         if self.is_zero() {
             None
         } else {
-            let decimal_fractional_squared = Self::DECIMAL_FRACTIONAL.checked_mul(Self::DECIMAL_FRACTIONAL).unwrap();
+            let decimal_fractional_squared = Self::DECIMAL_FRACTIONAL
+                .checked_mul(Self::DECIMAL_FRACTIONAL)
+                .unwrap();
             // Let self be p/q with p = self.0 and q = DECIMAL_FRACTIONAL.
             // Now we calculate the inverse a/b = q/p such that b = DECIMAL_FRACTIONAL. Then
             // `a = DECIMAL_FRACTIONAL*DECIMAL_FRACTIONAL / self.0`.
@@ -516,7 +513,7 @@ impl TryFrom<SignedDecimal> for PrecDec {
     type Error = PrecDecRangeExceeded;
 
     fn try_from(value: SignedDecimal) -> Result<Self, Self::Error> {
-       let atomics: Uint256  = value
+        let atomics: Uint256 = value
             .atomics()
             .try_into()
             .map_err(|_| PrecDecRangeExceeded)?;
@@ -528,7 +525,7 @@ impl TryFrom<SignedDecimal256> for PrecDec {
     type Error = PrecDecRangeExceeded;
 
     fn try_from(value: SignedDecimal256) -> Result<Self, Self::Error> {
-        let atomics: Uint256  = value
+        let atomics: Uint256 = value
             .atomics()
             .try_into()
             .map_err(|_| PrecDecRangeExceeded)?;
@@ -560,18 +557,18 @@ impl FromStr for PrecDec {
         let whole_part = parts_iter.next().unwrap(); // split always returns at least one element
         let whole = whole_part
             .parse::<Uint256>()
-            .map_err(|_| StdError::generic_err("Error parsing whole"))?;
+            .map_err(|_| StdError::msg("Error parsing whole"))?;
         let mut atomics = whole
             .checked_mul(Self::DECIMAL_FRACTIONAL)
-            .map_err(|_| StdError::generic_err("Value too big"))?;
+            .map_err(|_| StdError::msg("Value too big"))?;
 
         if let Some(fractional_part) = parts_iter.next() {
             let fractional = fractional_part
                 .parse::<Uint256>()
-                .map_err(|_| StdError::generic_err("Error parsing fractional"))?;
+                .map_err(|_| StdError::msg("Error parsing fractional"))?;
             let exp = (Self::DECIMAL_PLACES.checked_sub(fractional_part.len() as u32)).ok_or_else(
                 || {
-                    StdError::generic_err(format!(
+                    StdError::msg(format!(
                         "Cannot parse more than {} fractional digits",
                         Self::DECIMAL_PLACES
                     ))
@@ -585,11 +582,11 @@ impl FromStr for PrecDec {
                     // fractional < 10^DECIMAL_PLACES && fractional_factor <= 10^DECIMAL_PLACES
                     fractional.checked_mul(fractional_factor).unwrap(),
                 )
-                .map_err(|_| StdError::generic_err("Value too big"))?;
+                .map_err(|_| StdError::msg("Value too big"))?;
         }
 
         if parts_iter.next().is_some() {
-            return Err(StdError::generic_err("Unexpected number of dots"));
+            return Err(StdError::msg("Unexpected number of dots"));
         }
 
         Ok(PrecDec(atomics))
@@ -666,7 +663,7 @@ impl Mul for PrecDec {
         //     = (a.numerator() * b.numerator()) / a.denominator() / b.denominator()
 
         let result_as_uint256 = self.numerator().full_mul(other.numerator())
-            /  Uint512::from_uint256(Self::DECIMAL_FRACTIONAL);  // from_uint128 is a const method and should be "free" // TODO: fix me, this can still overflow
+            / Uint512::from_uint256(Self::DECIMAL_FRACTIONAL); // from_uint128 is a const method and should be "free" // TODO: fix me, this can still overflow
         match result_as_uint256.try_into() {
             Ok(result) => Self(result),
             Err(_) => panic!("attempt to multiply with overflow"),
@@ -844,7 +841,10 @@ mod tests {
     #[test]
     fn precdec_from_decimal256_works() {
         let val = Decimal256::new(Uint256::from(Uint128::MAX));
-        assert_eq!(PrecDec::try_from(val), Ok(PrecDec::from_str("340282366920938463463.374607431768211455").unwrap()));
+        assert_eq!(
+            PrecDec::try_from(val),
+            Ok(PrecDec::from_str("340282366920938463463.374607431768211455").unwrap())
+        );
 
         assert_eq!(PrecDec::try_from(Decimal256::zero()), Ok(PrecDec::zero()));
         assert_eq!(PrecDec::try_from(Decimal256::one()), Ok(PrecDec::one()));
@@ -856,7 +856,7 @@ mod tests {
 
     #[test]
     fn precdec_try_from_integer() {
-        let int = Uint256::from_u128(999888777666555);
+        let int = Uint256::new(999888777666555);
         let decimal = PrecDec::try_from(int).unwrap();
         assert_eq!(int.to_string(), decimal.to_string());
     }
@@ -865,7 +865,8 @@ mod tests {
     fn precdec_try_from_signed_works() {
         assert_eq!(
             PrecDec::try_from(SignedDecimal::MAX).unwrap(),
-            PrecDec::from_str("170141183460469231731.687303715884105727").unwrap());
+            PrecDec::from_str("170141183460469231731.687303715884105727").unwrap()
+        );
         assert_eq!(
             PrecDec::try_from(SignedDecimal::zero()).unwrap(),
             PrecDec::zero()
@@ -1088,106 +1089,83 @@ mod tests {
 
         // Works for documented max value
         assert_eq!(
-
-            PrecDec::from_str("115792089237316195423570985008687907853269984665640.564039457584007913129639935").unwrap(),
+            PrecDec::from_str(
+                "115792089237316195423570985008687907853269984665640.564039457584007913129639935"
+            )
+            .unwrap(),
             PrecDec::MAX
         );
     }
 
     #[test]
     fn precdec_from_str_errors_for_broken_whole_part() {
-        match PrecDec::from_str("").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Error parsing whole"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("").unwrap_err();
+        assert!(err.to_string().contains("Error parsing whole"));
 
-        match PrecDec::from_str(" ").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Error parsing whole"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str(" ").unwrap_err();
+        assert!(err.to_string().contains("Error parsing whole"));
 
-        match PrecDec::from_str("-1").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Error parsing whole"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("-1").unwrap_err();
+        assert!(err.to_string().contains("Error parsing whole"));
     }
 
     #[test]
     fn precdec_from_str_errors_for_broken_fractional_part() {
-        match PrecDec::from_str("1.").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Error parsing fractional"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("1.").unwrap_err();
+        assert!(err.to_string().contains("Error parsing fractional"));
 
-        match PrecDec::from_str("1. ").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Error parsing fractional"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("1. ").unwrap_err();
+        assert!(err.to_string().contains("Error parsing fractional"));
 
-        match PrecDec::from_str("1.e").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Error parsing fractional"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("1.e").unwrap_err();
+        assert!(err.to_string().contains("Error parsing fractional"));
 
-        match PrecDec::from_str("1.2e3").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Error parsing fractional"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("1.2e3").unwrap_err();
+        assert!(err.to_string().contains("Error parsing fractional"));
     }
 
     #[test]
     fn precdec_from_str_errors_for_more_than_27_fractional_digits() {
-        match PrecDec::from_str("7.1234567890123456789123456789").unwrap_err() {
-            StdError::GenericErr { msg, .. } => {
-                assert_eq!(msg, "Cannot parse more than 27 fractional digits",)
-            }
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("7.1234567890123456789123456789").unwrap_err();
+        assert!(err
+            .to_string()
+            .contains("Cannot parse more than 27 fractional digits"));
 
         // No special rules for trailing zeros. This could be changed but adds gas cost for the happy path.
-        match PrecDec::from_str("7.1230000000000000000000000000").unwrap_err() {
-            StdError::GenericErr { msg, .. } => {
-                assert_eq!(msg, "Cannot parse more than 27 fractional digits")
-            }
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("7.1230000000000000000000000000").unwrap_err();
+        assert!(err
+            .to_string()
+            .contains("Cannot parse more than 27 fractional digits"));
     }
 
     #[test]
     fn precdec_from_str_errors_for_invalid_number_of_dots() {
-        match PrecDec::from_str("1.2.3").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Unexpected number of dots"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("1.2.3").unwrap_err();
+        assert!(err.to_string().contains("Unexpected number of dots"));
 
-        match PrecDec::from_str("1.2.3.4").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Unexpected number of dots"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err = PrecDec::from_str("1.2.3.4").unwrap_err();
+        assert!(err.to_string().contains("Unexpected number of dots"));
     }
 
     #[test]
     fn precdec_from_str_errors_for_more_than_max_value() {
         // Integer
-        match PrecDec::from_str("34028236692099999999999999999999999999999999999999999938463464").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Value too big"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
+        let err =
+            PrecDec::from_str("34028236692099999999999999999999999999999999999999999938463464")
+                .unwrap_err();
+        assert!(err.to_string().contains("Value too big"));
 
         // Decimal
-        match PrecDec::from_str("115792089237316195423570985008687907853269984665640564039458.0").unwrap_err() {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Value too big"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
-        match Decimal256::from_str(
+        let err =
+            PrecDec::from_str("115792089237316195423570985008687907853269984665640564039458.0")
+                .unwrap_err();
+        assert!(err.to_string().contains("Value too big"));
+
+        let err = Decimal256::from_str(
             "115792089237316195423570985008687907853269984665640564039457.584007913129639936",
         )
-            .unwrap_err()
-        {
-            StdError::GenericErr { msg, .. } => assert_eq!(msg, "Value too big"),
-            e => panic!("Unexpected error: {e:?}"),
-        }
-
+        .unwrap_err();
+        assert!(err.to_string().contains("Overflow") || err.to_string().contains("Cannot Add"));
     }
 
     #[test]
@@ -1198,10 +1176,10 @@ mod tests {
         let two = PrecDec::percent(200);
         let max = PrecDec::MAX;
 
-        assert_eq!(zero.atomics(), Uint256::from_u128(0));
-        assert_eq!(one.atomics(), Uint256::from_u128(1000000000000000000000000000));
-        assert_eq!(half.atomics(), Uint256::from_u128(500000000000000000000000000));
-        assert_eq!(two.atomics(), Uint256::from_u128(2000000000000000000000000000));
+        assert_eq!(zero.atomics(), Uint256::new(0));
+        assert_eq!(one.atomics(), Uint256::new(1000000000000000000000000000));
+        assert_eq!(half.atomics(), Uint256::new(500000000000000000000000000));
+        assert_eq!(two.atomics(), Uint256::new(2000000000000000000000000000));
         assert_eq!(max.atomics(), Uint256::MAX);
     }
 
@@ -1519,7 +1497,7 @@ mod tests {
             (PrecDec::percent(10), PrecDec::zero()),
             (PrecDec::percent(10), PrecDec::percent(5)),
             (PrecDec::MAX, PrecDec::one()),
-            (PrecDec::MAX / Uint256::from_u128(2), PrecDec::percent(200)),
+            (PrecDec::MAX / Uint256::new(2), PrecDec::percent(200)),
             (PrecDec::permille(6), PrecDec::permille(13)),
         ];
 
@@ -1594,9 +1572,18 @@ mod tests {
         assert_eq!(dec("1000") / a, dec("0.000000000000008121647560868"));
         assert_eq!(dec("1000000") / a, dec("0.000000000008121647560868164"));
         assert_eq!(dec("1000000000") / a, dec("0.000000008121647560868164773"));
-        assert_eq!(dec("1000000000000") / a, dec("0.000008121647560868164773903"));
-        assert_eq!(dec("1000000000000000") / a, dec("0.008121647560868164773903026"));
-        assert_eq!(dec("1000000000000000000") / a, dec("8.121647560868164773903026009"));
+        assert_eq!(
+            dec("1000000000000") / a,
+            dec("0.000008121647560868164773903")
+        );
+        assert_eq!(
+            dec("1000000000000000") / a,
+            dec("0.008121647560868164773903026")
+        );
+        assert_eq!(
+            dec("1000000000000000000") / a,
+            dec("8.121647560868164773903026009")
+        );
 
         // Move left
         let a = dec("0.123127726548762582");
@@ -1654,12 +1641,12 @@ mod tests {
     fn precdec_uint128_division() {
         // a/b
         let left = PrecDec::percent(150); // 1.5
-        let right = Uint256::from_u128(3);
+        let right = Uint256::new(3);
         assert_eq!(left / right, PrecDec::percent(50));
 
         // 0/a
         let left = PrecDec::zero();
-        let right = Uint256::from_u128(300);
+        let right = Uint256::new(300);
         assert_eq!(left / right, PrecDec::zero());
     }
 
@@ -1667,7 +1654,7 @@ mod tests {
     #[should_panic(expected = "attempt to divide by zero")]
     fn precdec_uint128_divide_by_zero() {
         let left = PrecDec::percent(150); // 1.5
-        let right = Uint256::from_u128(0);
+        let right = Uint256::new(0);
         let _result = left / right;
     }
 
@@ -1675,12 +1662,12 @@ mod tests {
     fn precdec_uint128_div_assign() {
         // a/b
         let mut dec = PrecDec::percent(150); // 1.5
-        dec /= Uint256::from_u128(3);
+        dec /= Uint256::new(3);
         assert_eq!(dec, PrecDec::percent(50));
 
         // 0/a
         let mut dec = PrecDec::zero();
-        dec /= Uint256::from_u128(300);
+        dec /= Uint256::new(300);
         assert_eq!(dec, PrecDec::zero());
     }
 
@@ -1689,7 +1676,7 @@ mod tests {
     fn precdec_uint128_div_assign_by_zero() {
         // a/0
         let mut dec = PrecDec::percent(50);
-        dec /= Uint256::from_u128(0);
+        dec /= Uint256::new(0);
     }
 
     #[test]
@@ -1779,7 +1766,6 @@ mod tests {
             PrecDec::percent(700).checked_pow(8).unwrap(),
             PrecDec::percent(576480100)
         );
-
 
         assert_eq!(
             PrecDec::percent(10).checked_pow(2).unwrap(),
@@ -2158,27 +2144,33 @@ mod tests {
     #[test]
     fn precdec_to_uint_floor_works() {
         let d = PrecDec::from_str("12.000000000000000001").unwrap();
-        assert_eq!(d.to_uint_floor(), Uint256::from_u128(12));
+        assert_eq!(d.to_uint_floor(), Uint256::new(12));
         let d = PrecDec::from_str("12.345").unwrap();
-        assert_eq!(d.to_uint_floor(), Uint256::from_u128(12));
+        assert_eq!(d.to_uint_floor(), Uint256::new(12));
         let d = PrecDec::from_str("12.999").unwrap();
-        assert_eq!(d.to_uint_floor(), Uint256::from_u128(12));
+        assert_eq!(d.to_uint_floor(), Uint256::new(12));
         let d = PrecDec::from_str("0.98451384").unwrap();
-        assert_eq!(d.to_uint_floor(), Uint256::from_u128(0));
+        assert_eq!(d.to_uint_floor(), Uint256::new(0));
 
         let d = PrecDec::from_str("75.0").unwrap();
-        assert_eq!(d.to_uint_floor(), Uint256::from_u128(75));
+        assert_eq!(d.to_uint_floor(), Uint256::new(75));
         let d = PrecDec::from_str("0.0").unwrap();
-        assert_eq!(d.to_uint_floor(), Uint256::from_u128(0));
+        assert_eq!(d.to_uint_floor(), Uint256::new(0));
 
         let d = PrecDec::MAX;
-        assert_eq!(d.to_uint_floor(), Uint256::from_str("115792089237316195423570985008687907853269984665640").unwrap());
+        assert_eq!(
+            d.to_uint_floor(),
+            Uint256::from_str("115792089237316195423570985008687907853269984665640").unwrap()
+        );
 
         // Does the same as the old workaround `Uint256::one() * my_decimal`.
         // This block can be deleted as part of https://github.com/CosmWasm/cosmwasm/issues/1485.
         let tests = vec![
             (PrecDec::from_str("12.345").unwrap(), Uint256::from(12u128)),
-            (PrecDec::from_str("0.98451384").unwrap(), Uint256::from(0u128)),
+            (
+                PrecDec::from_str("0.98451384").unwrap(),
+                Uint256::from(0u128),
+            ),
             (PrecDec::from_str("178.0").unwrap(), Uint256::from(178u128)),
             (PrecDec::MIN, Uint256::from(0u128)),
             (PrecDec::MAX, Uint256::MAX / PrecDec::DECIMAL_FRACTIONAL),
@@ -2191,19 +2183,22 @@ mod tests {
     #[test]
     fn precdec_to_uint_ceil_works() {
         let d = PrecDec::from_str("12.000000000000000001").unwrap();
-        assert_eq!(d.to_uint_ceil(), Uint256::from_u128(13));
+        assert_eq!(d.to_uint_ceil(), Uint256::new(13));
         let d = PrecDec::from_str("12.345").unwrap();
-        assert_eq!(d.to_uint_ceil(), Uint256::from_u128(13));
+        assert_eq!(d.to_uint_ceil(), Uint256::new(13));
         let d = PrecDec::from_str("12.999").unwrap();
-        assert_eq!(d.to_uint_ceil(), Uint256::from_u128(13));
+        assert_eq!(d.to_uint_ceil(), Uint256::new(13));
 
         let d = PrecDec::from_str("75.0").unwrap();
-        assert_eq!(d.to_uint_ceil(), Uint256::from_u128(75));
+        assert_eq!(d.to_uint_ceil(), Uint256::new(75));
         let d = PrecDec::from_str("0.0").unwrap();
-        assert_eq!(d.to_uint_ceil(), Uint256::from_u128(0));
+        assert_eq!(d.to_uint_ceil(), Uint256::new(0));
 
         let d = PrecDec::MAX;
-        assert_eq!(d.to_uint_ceil(), Uint256::from_str("115792089237316195423570985008687907853269984665641").unwrap());
+        assert_eq!(
+            d.to_uint_ceil(),
+            Uint256::from_str("115792089237316195423570985008687907853269984665641").unwrap()
+        );
     }
 
     #[test]

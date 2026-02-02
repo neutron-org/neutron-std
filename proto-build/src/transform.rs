@@ -12,8 +12,8 @@ use walkdir::WalkDir;
 use crate::transformers;
 
 /// Protos belonging to these Protobuf packages will be excluded
-/// (i.e. because they are sourced from `tendermint-proto`)
-const EXCLUDED_PROTO_PACKAGES: &[&str] = &["cosmos_proto", "google"];
+/// (i.e. because they are sourced from `tendermint-proto` or from slinky's `sidecar`)
+const EXCLUDED_PROTO_PACKAGES: &[&str] = &["cosmos_proto", "google", "sidecar"];
 
 pub fn copy_and_transform_all(
     from_dir: &Path,
