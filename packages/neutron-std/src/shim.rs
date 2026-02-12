@@ -350,7 +350,7 @@ pub fn cosmwasm_to_proto_coins(
 
 #[cfg(test)]
 mod tests {
-    use cosmwasm_std::Uint128;
+    use cosmwasm_std::Uint256;
 
     use super::*;
 
@@ -359,11 +359,11 @@ mod tests {
         let coins = vec![
             cosmwasm_std::Coin {
                 denom: "uatom".to_string(),
-                amount: Uint128::new(100),
+                amount: Uint256::from(100u128),
             },
             cosmwasm_std::Coin {
                 denom: "uosmo".to_string(),
-                amount: Uint128::new(200),
+                amount: Uint256::from(200u128),
             },
         ];
 

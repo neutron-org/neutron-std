@@ -63,7 +63,7 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
                     .as_slice(),
                 );
                 match resp {
-                    Err(e) => Err(cosmwasm_std::StdError::generic_err(format!(
+                    Err(e) => Err(cosmwasm_std::StdError::msg(format!(
                         "Can't decode item: {}",
                         e
                     ))),
@@ -84,7 +84,6 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
     (quote! {
         impl #ident {
             pub const TYPE_URL: &'static str = #type_url;
-            
             #path_token
 
             #cosmwasm_query
@@ -126,10 +125,10 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
             fn try_from(binary: cosmwasm_std::Binary) -> ::std::result::Result<Self, Self::Error> {
                 use ::prost::Message;
                 Self::decode(&binary[..]).map_err(|e| {
-                    cosmwasm_std::StdError::parse_err(
-                        stringify!(#ident),
+                    cosmwasm_std::StdError::msg(
                         format!(
-                            "Unable to decode binary: \n  - base64: {}\n  - bytes array: {:?}\n\n{:?}",
+                            "Unable to decode binary for {}: \n  - base64: {}\n  - bytes array: {:?}\n\n{:?}",
+                            stringify!(#ident),
                             binary,
                             binary.to_vec(),
                             e
@@ -145,9 +144,9 @@ pub fn derive_cosmwasm_ext(input: TokenStream) -> TokenStream {
             fn try_from(result: cosmwasm_std::SubMsgResult) -> ::std::result::Result<Self, Self::Error> {
                 result
                     .into_result()
-                    .map_err(|e| cosmwasm_std::StdError::generic_err(e))?
+                    .map_err(|e| cosmwasm_std::StdError::msg(e))?
                     .data
-                    .ok_or_else(|| cosmwasm_std::StdError::not_found("cosmwasm_std::SubMsgResult::<T>"))?
+                    .ok_or_else(|| cosmwasm_std::StdError::msg("cosmwasm_std::SubMsgResult::<T> not found"))?
                     .try_into()
             }
         }

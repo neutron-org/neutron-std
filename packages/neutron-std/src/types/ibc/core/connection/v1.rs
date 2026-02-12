@@ -157,7 +157,7 @@ pub struct ConnectionPaths {
     #[prost(string, repeated, tag = "2")]
     pub paths: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// Version defines the versioning scheme used to negotiate the IBC verison in
+/// Version defines the versioning scheme used to negotiate the IBC version in
 /// the connection handshake.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -657,6 +657,7 @@ pub struct MsgConnectionOpenTry {
     #[prost(string, tag = "2")]
     #[serde(alias = "previous_connectionID")]
     pub previous_connection_id: ::prost::alloc::string::String,
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(message, optional, tag = "3")]
     pub client_state: ::core::option::Option<crate::shim::Any>,
@@ -672,7 +673,7 @@ pub struct MsgConnectionOpenTry {
     pub counterparty_versions: ::prost::alloc::vec::Vec<Version>,
     #[prost(message, optional, tag = "7")]
     pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    /// proof of the initialization the connection on Chain A: `UNITIALIZED ->
+    /// proof of the initialization the connection on Chain A: `UNINITIALIZED ->
     /// INIT`
     #[prost(bytes = "vec", tag = "8")]
     #[serde(
@@ -680,7 +681,7 @@ pub struct MsgConnectionOpenTry {
         deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
     )]
     pub proof_init: ::prost::alloc::vec::Vec<u8>,
-    /// proof of client state included in message
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(bytes = "vec", tag = "9")]
     #[serde(
@@ -688,7 +689,7 @@ pub struct MsgConnectionOpenTry {
         deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
     )]
     pub proof_client: ::prost::alloc::vec::Vec<u8>,
-    /// proof of client consensus state
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(bytes = "vec", tag = "10")]
     #[serde(
@@ -696,12 +697,13 @@ pub struct MsgConnectionOpenTry {
         deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
     )]
     pub proof_consensus: ::prost::alloc::vec::Vec<u8>,
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(message, optional, tag = "11")]
     pub consensus_height: ::core::option::Option<super::super::client::v1::Height>,
     #[prost(string, tag = "12")]
     pub signer: ::prost::alloc::string::String,
-    /// optional proof data for host state machines that are unable to introspect their own consensus state
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(bytes = "vec", tag = "13")]
     #[serde(
@@ -747,12 +749,13 @@ pub struct MsgConnectionOpenAck {
     pub counterparty_connection_id: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
     pub version: ::core::option::Option<Version>,
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(message, optional, tag = "4")]
     pub client_state: ::core::option::Option<crate::shim::Any>,
     #[prost(message, optional, tag = "5")]
     pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    /// proof of the initialization the connection on Chain B: `UNITIALIZED ->
+    /// proof of the initialization the connection on Chain B: `UNINITIALIZED ->
     /// TRYOPEN`
     #[prost(bytes = "vec", tag = "6")]
     #[serde(
@@ -760,7 +763,7 @@ pub struct MsgConnectionOpenAck {
         deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
     )]
     pub proof_try: ::prost::alloc::vec::Vec<u8>,
-    /// proof of client state included in message
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(bytes = "vec", tag = "7")]
     #[serde(
@@ -768,7 +771,7 @@ pub struct MsgConnectionOpenAck {
         deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
     )]
     pub proof_client: ::prost::alloc::vec::Vec<u8>,
-    /// proof of client consensus state
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(bytes = "vec", tag = "8")]
     #[serde(
@@ -776,12 +779,13 @@ pub struct MsgConnectionOpenAck {
         deserialize_with = "crate::serde::as_base64_encoded_string::deserialize"
     )]
     pub proof_consensus: ::prost::alloc::vec::Vec<u8>,
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(message, optional, tag = "9")]
     pub consensus_height: ::core::option::Option<super::super::client::v1::Height>,
     #[prost(string, tag = "10")]
     pub signer: ::prost::alloc::string::String,
-    /// optional proof data for host state machines that are unable to introspect their own consensus state
+    /// Deprecated: this field is unused.
     #[deprecated]
     #[prost(bytes = "vec", tag = "11")]
     #[serde(
