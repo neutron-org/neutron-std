@@ -43,6 +43,9 @@ pub struct MsgTransfer {
     pub memo: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "9")]
     pub fee: ::core::option::Option<super::feerefunder::Fee>,
+    /// optional encoding
+    #[prost(string, tag = "10")]
+    pub encoding: ::prost::alloc::string::String,
 }
 /// MsgTransferResponse is the modified response type for
 /// ibc-go MsgTransfer.
