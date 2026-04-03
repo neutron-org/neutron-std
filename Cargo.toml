@@ -16,9 +16,9 @@ overflow-checks = true
 [workspace.dependencies]
 cosmwasm-std = { version = "3.0.1", features = [ "stargate" ] }
 cosmwasm-schema = { version = "3.0.0", default-features = false }
-cw2 = "3.0.0"
+cw2 = { path = "../cw-minus/packages/cw2" }
 cw-storage-plus = "3.0.0"
-schemars = "0.8.4"
+schemars = "0.8"
 serde = { version = "1.0.188", default-features = false }
 serde-json-wasm = "1.0.0"
 base64 = "0.21.7"
@@ -31,5 +31,5 @@ hex = "0.4.3"
 serde_json = { version = "1.0.87" }
 speedate = "0.13.0"
 
-cosmos-sdk-proto = { version = "0.28.0",git = "https://github.com/permissionlessweb/cosmos-rust", default-features = false }
-tendermint-proto = { version = "0.40.4",git = "https://github.com/permissionlessweb/tendermint-rs", default-features = false }
+cosmos-sdk-proto = { path = "../cosmos-rust/cosmos-sdk-proto" }
+tendermint-proto = { path = "../tendermint-rs/proto" }

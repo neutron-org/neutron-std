@@ -42,7 +42,7 @@ const FEEMARKET_REV: &str = "4ffcf3d434644a5499fff5a81d16ebea62e9eac1";
 
 const SLINKY_REV: &str = "v1.2.1";
 
-const ADMIN_MODULE_REV: &str = "v2.0.2";
+const ADMIN_MODULE_REV: &str = "v2.0.3";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
@@ -79,15 +79,15 @@ pub fn generate() {
         fs::remove_dir_all(tmp_repos_dir.clone()).unwrap();
     }
 
-    git::clone_repo(COSMOS_SDK_REPO, COSMOS_SDK_DIR, COSMOS_SDK_REV);
-    git::clone_repo(NEUTRON_REPO, NEUTRON_DIR, NEUTRON_REV);
-    git::clone_repo(WASMD_REPO, WASMD_DIR, WASMD_REV);
-    git::clone_repo(COMETBFT_REPO, COMETBFT_DIR, COMETBFT_REV);
-    git::clone_repo(IBC_GO_REPO, IBC_GO_DIR, IBC_GO_REV);
-    git::clone_repo(ICS23_REPO, ICS23_DIR, ICS23_REV);
-    git::clone_repo(FEEMARKET_REPO, FEEMARKET_DIR, FEEMARKET_REV);
-    git::clone_repo(SLINKY_REPO, SLINKY_DIR, SLINKY_REV);
-    git::clone_repo(ADMIN_MODULE_REPO, ADMIN_MODULE_DIR, ADMIN_MODULE_REV);
+    // git::clone_repo(COSMOS_SDK_REPO, COSMOS_SDK_DIR, COSMOS_SDK_REV);
+    // git::clone_repo(NEUTRON_REPO, NEUTRON_DIR, NEUTRON_REV);
+    // git::clone_repo(WASMD_REPO, WASMD_DIR, WASMD_REV);
+    // git::clone_repo(COMETBFT_REPO, COMETBFT_DIR, COMETBFT_REV);
+    // git::clone_repo(IBC_GO_REPO, IBC_GO_DIR, IBC_GO_REV);
+    // git::clone_repo(ICS23_REPO, ICS23_DIR, ICS23_REV);
+    // git::clone_repo(FEEMARKET_REPO, FEEMARKET_DIR, FEEMARKET_REV);
+    // git::clone_repo(SLINKY_REPO, SLINKY_DIR, SLINKY_REV);
+    // git::clone_repo(ADMIN_MODULE_REPO, ADMIN_MODULE_DIR, ADMIN_MODULE_REV);
 
     let tmp_build_dir: PathBuf = TMP_BUILD_DIR.parse().unwrap();
     let out_dir: PathBuf = OUT_DIR.parse().unwrap();
