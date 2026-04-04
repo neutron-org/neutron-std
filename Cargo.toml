@@ -14,10 +14,10 @@ incremental = false
 overflow-checks = true
 
 [workspace.dependencies]
-cosmwasm-std = { version = "3.0.1", features = [ "stargate" ] }
-cosmwasm-schema = { version = "3.0.0", default-features = false }
+cosmwasm-std = { version = "3.0.4", features = [ "stargate" ] }
+cosmwasm-schema = { version = "3.0.4", default-features = false }
 cw2 = { path = "../cw-minus/packages/cw2" }
-cw-storage-plus = "3.0.0"
+cw-storage-plus = "3.0.1"
 schemars = "0.8"
 serde = { version = "1.0.188", default-features = false }
 serde-json-wasm = "1.0.0"
