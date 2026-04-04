@@ -14,10 +14,10 @@ incremental = false
 overflow-checks = true
 
 [workspace.dependencies]
-cosmwasm-std = { version = "3.0.4", features = [ "stargate" ] }
-cosmwasm-schema = { version = "3.0.4", default-features = false }
-cw2 = { path = "../cw-minus/packages/cw2" }
-cw-storage-plus = "3.0.1"
+cosmwasm-std = { git = "https://github.com/permissionlessweb/cosmwasm", branch = "mvp" }
+cosmwasm-schema = { git = "https://github.com/permissionlessweb/cosmwasm", branch = "mvp" }
+cw2 = { git = "https://github.com/permissionlessweb/cw-minus", branch = "main" }
+cw-storage-plus = { git = "https://github.com/permissionlessweb/cw-storage-plus", branch = "mvp" }
 schemars = "0.8"
 serde = { version = "1.0.188", default-features = false }
 serde-json-wasm = "1.0.0"
@@ -31,5 +31,5 @@ hex = "0.4.3"
 serde_json = { version = "1.0.87" }
 speedate = "0.13.0"
 
-cosmos-sdk-proto = { path = "../cosmos-rust/cosmos-sdk-proto" }
-tendermint-proto = { path = "../tendermint-rs/proto" }
+cosmos-sdk-proto = { git = "https://github.com/permissionlessweb/cosmos-rust", branch = "main" }
+tendermint-proto = { git = "https://github.com/permissionlessweb/tendermint-rs", branch = "main" }
