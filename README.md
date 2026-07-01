@@ -1,5 +1,14 @@
 # neutron-std
 
+## ⚠️ Project Status: Archived & Maintenance Mode
+
+The neutron repository has been officially archived and placed into long-term maintenance mode. 
+
+* Security Updates: The development team is no longer actively monitoring this codebase or tracking security vulnerabilities. 
+* Future Development: The community is highly encouraged to fork this repository to implement custom improvements, bug fixes, or continued development.
+
+Thank you to everyone who contributed to the project!
+
 Rust libraries for Neutron. The following table shows every published crates maintained in this repository:
 
 | Crate                                             | Description                                                                                                                   | Crates.io                                                                                                                                 | Docs                                                                                        |
