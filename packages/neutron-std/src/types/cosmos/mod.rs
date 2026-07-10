@@ -1,4 +1,3 @@
-pub mod adminmodule;
 pub mod app;
 pub mod auth;
 pub mod authz;

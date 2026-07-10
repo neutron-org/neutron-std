@@ -285,6 +285,8 @@ pub struct Params {
     /// currently, the only such privilege is depositing outside of the allowed fee_tiers.
     #[prost(string, repeated, tag = "6")]
     pub whitelisted_lps: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(bool, tag = "7")]
+    pub withdraw_only: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -861,6 +863,8 @@ pub struct LimitOrderTrancheUser {
     pub address: ::prost::alloc::string::String,
     #[prost(string, tag = "5")]
     pub shares_owned: ::prost::alloc::string::String,
+    /// DEPRECATED: shares_withdrawn will be removed in a future release, `dec_shares_withdrawn` should be used
+    #[deprecated]
     #[prost(string, tag = "6")]
     pub shares_withdrawn: ::prost::alloc::string::String,
     /// TODO: remove this in next release. It is no longer used
@@ -872,6 +876,8 @@ pub struct LimitOrderTrancheUser {
         deserialize_with = "crate::serde::as_str::deserialize"
     )]
     pub order_type: i32,
+    #[prost(string, tag = "9")]
+    pub dec_shares_withdrawn: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
