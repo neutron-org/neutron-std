@@ -63,4 +63,11 @@ pub struct Params {
     /// whitelisted_hooks is the list of hooks which are allowed to be added and executed
     #[prost(message, repeated, tag = "4")]
     pub whitelisted_hooks: ::prost::alloc::vec::Vec<WhitelistedHook>,
+    /// Sets a limit on the gas that can be consumed by the before_send hook.
+    #[prost(uint64, tag = "5")]
+    #[serde(
+        serialize_with = "crate::serde::as_str::serialize",
+        deserialize_with = "crate::serde::as_str::deserialize"
+    )]
+    pub track_before_send_gas_limit: u64,
 }
